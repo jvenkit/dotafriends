@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">DotaFriends</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_clear_matches">Clear match database</string>
+    <string name="action_update_matches">Update match list</string>
+    <string name="action_track_player">Track player</string>
+    <string name="add_match_confirmation">Added match details</string>
+    <string name="context_delete">Delete</string>
+    <string name="dialog_player_id_title">Track a player</string>
+    <string name="dialog_player_id_positive_button">Track</string>
+    <string name="dialog_player_id_negative_button">Cancel</string>
+    <string name="dialog_player_id_hint">Enter a player ID to track. This will delete all matches currently in the database.</string>
+    <string name="empty_list">You haven\'t added any matches! Use the \"Track Player\" option to choose a player\'s matches to add.</string>
+    <string name="error_fetch_match">Couldn\'t fetch match details</string>
+    <string name="error_invalid_match_id">Invalid match ID</string>
+    <string name="error_duplicate_match">Match already in database</string>
+    <string name="fetch_match_confirmation">Fetching match</string>
+    <string name="list_item_hero_icon_description">Hero icon</string>
+</resources>
