@@ -2,7 +2,6 @@ package com.dotafriends.dotafriends.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +13,6 @@ import android.widget.TextView;
 import com.dotafriends.dotafriends.R;
 import com.dotafriends.dotafriends.database.DatabaseContract;
 import com.dotafriends.dotafriends.helpers.MatchDataFormatter;
-
-import java.util.Formatter;
 
 /**
  * Binds data from cursor to ListView in MatchListFragment
