@@ -12,67 +12,99 @@ import java.util.List;
  */
 public class SingleMatchInfo extends WebApiResult{
 
-    public List<PlayerMatchData> players = new ArrayList<>();
-    public boolean radiantWin;
-    public int duration;
-    public int startTime;
-    public long matchId;
-    public int matchSeqNum;
-    public int towerStatusRadiant;
-    public int towerStatusDire;
-    public int barracksStatusRadiant;
-    public int barracksStatusDire;
-    public int cluster;
-    public int firstBloodTime;
-    public int lobbyType;
-    public int humanPlayers;
-    public int leagueId;
-    public int positiveVotes;
-    public int negativeVotes;
-    public int gameMode;
-    public int engine;
+    private List<PlayerMatchData> players = new ArrayList<>();
+    private boolean radiantWin;
+    private int duration;
+    private int startTime;
+    private long matchId;
+    private int matchSeqNum;
+    private int towerStatusRadiant;
+    private int towerStatusDire;
+    private int barracksStatusRadiant;
+    private int barracksStatusDire;
+    private int cluster;
+    private int firstBloodTime;
+    private int lobbyType;
+    private int humanPlayers;
+    private int leagueId;
+    private int positiveVotes;
+    private int negativeVotes;
+    private int gameMode;
+    private int engine;
 
-    public class PlayerMatchData {
-
-        public long accountId;
-        public int playerSlot;
-        public int heroId;
-        @SerializedName("item_0")
-        public int item0;
-        @SerializedName("item_1")
-        public int item1;
-        @SerializedName("item_2")
-        public int item2;
-        @SerializedName("item_3")
-        public int item3;
-        @SerializedName("item_4")
-        public int item4;
-        @SerializedName("item_5")
-        public int item5;
-        public int kills;
-        public int deaths;
-        public int assists;
-        public int leaverStatus;
-        public int gold;
-        public int lastHits;
-        public int denies;
-        public int goldPerMin;
-        public int xpPerMin;
-        public int goldSpent;
-        public int heroDamage;
-        public int towerDamage;
-        public int heroHealing;
-        public int level;
-        public List<AbilityUpgrade> abilityUpgrades = new ArrayList<>();
-
-        public class AbilityUpgrade {
-
-            public int ability;
-            public int time;
-            public int level;
-
-        }
-
+    public List<PlayerMatchData> getPlayers() {
+        return players;
     }
 
+    public boolean isRadiantWin() {
+        return radiantWin;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public int getStartTime() {
+        return startTime;
+    }
+
+    public long getMatchId() {
+        return matchId;
+    }
+
+    public int getMatchSeqNum() {
+        return matchSeqNum;
+    }
+
+    public int getTowerStatusRadiant() {
+        return towerStatusRadiant;
+    }
+
+    public int getTowerStatusDire() {
+        return towerStatusDire;
+    }
+
+    public int getBarracksStatusRadiant() {
+        return barracksStatusRadiant;
+    }
+
+    public int getBarracksStatusDire() {
+        return barracksStatusDire;
+    }
+
+    public int getCluster() {
+        return cluster;
+    }
+
+    public int getFirstBloodTime() {
+        return firstBloodTime;
+    }
+
+    public int getLobbyType() {
+        return lobbyType;
+    }
+
+    public int getHumanPlayers() {
+        return humanPlayers;
+    }
+
+    public int getLeagueId() {
+        return leagueId;
+    }
+
+    public int getPositiveVotes() {
+        return positiveVotes;
+    }
+
+    public int getNegativeVotes() {
+        return negativeVotes;
+    }
+
+    public int getGameMode() {
+        return gameMode;
+    }
+
+    public int getEngine() {
+        return engine;
+    }
 }

@@ -123,7 +123,7 @@ public class MatchService extends Service {
                     @Override
                     public void onNext(SingleMatchInfo match) {
                         mProgress += 1;
-                        mBuilder.setContentText("Adding match : " + match.matchId)
+                        mBuilder.setContentText("Adding match : " + match.getMatchId())
                                 .setProgress(mProgressMax, mProgress, false);
                         mNotifyManager.notify(0, mBuilder.build());
                         broadcastListUpdate();

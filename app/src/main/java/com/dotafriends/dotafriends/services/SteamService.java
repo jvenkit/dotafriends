@@ -1,6 +1,7 @@
 package com.dotafriends.dotafriends.services;
 
 import com.dotafriends.dotafriends.models.MatchHistory;
+import com.dotafriends.dotafriends.models.MatchHistoryMatch;
 import com.dotafriends.dotafriends.models.SingleMatchInfo;
 import com.dotafriends.dotafriends.models.WebApiResult;
 import com.google.gson.FieldNamingPolicy;
@@ -70,10 +71,10 @@ public class SteamService {
                 .flatMap(requestData -> {
                     if (requestData.result == null) {
                         return Observable.error(new SteamServiceException("Steam Web API is not responding, try again later"));
-                    } else if (requestData.result.error != null) {
-                        return Observable.error(new SteamServiceException(requestData.result.error));
-                    } else if (requestData.result.statusDetail != null) {
-                        return Observable.error(new SteamServiceException(requestData.result.statusDetail));
+                    } else if (requestData.result.getError() != null) {
+                        return Observable.error(new SteamServiceException(requestData.result.getError()));
+                    } else if (requestData.result.getStatusDetail() != null) {
+                        return Observable.error(new SteamServiceException(requestData.result.getStatusDetail()));
                     } else {
                         return Observable.just(requestData.result);
                     }
@@ -97,10 +98,10 @@ public class SteamService {
     }
 
     private Observable<MatchHistory> fetchRemainingMatchHistory(MatchHistory requestData, long accountId) {
-        if (requestData.resultsRemaining > 0) {
+        if (requestData.getResultsRemaining() > 0) {
             return Observable.concat(Observable.just(requestData),
                     mWebService.fetchMatchHistory(API_KEY, accountId,
-                            requestData.matches.get(requestData.numResults - 1).matchId, 100)
+                            requestData.getMatches().get(requestData.getNumResults() - 1).getMatchId(), 100)
                             .compose(this.<MatchHistory>filterWebErrors())
                             .delay(2000, TimeUnit.MILLISECONDS)
                             .flatMap(result -> fetchRemainingMatchHistory(result, accountId))
@@ -117,13 +118,13 @@ public class SteamService {
                 .flatMap(result -> fetchRemainingMatchHistory(result, accountId))
                 .flatMap(matchHistory -> {
                     if (matchIds.size() == 0) {
-                        for (MatchHistory.MatchHistoryMatch match : matchHistory.matches) {
-                            matchIds.add(match.matchId);
+                        for (MatchHistoryMatch match : matchHistory.getMatches()) {
+                            matchIds.add(match.getMatchId());
                         }
                         return Observable.just(matchIds);
                     } else {
-                        for (int i = 1; i < matchHistory.matches.size(); i++) {
-                            matchIds.add(matchHistory.matches.get(i).matchId);
+                        for (int i = 1; i < matchHistory.getMatches().size(); i++) {
+                            matchIds.add(matchHistory.getMatches().get(i).getMatchId());
                         }
                         return Observable.just(matchIds);
                     }

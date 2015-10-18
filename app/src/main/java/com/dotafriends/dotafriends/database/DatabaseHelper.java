@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.dotafriends.dotafriends.activities.MainActivity;
 import com.dotafriends.dotafriends.helpers.MatchDataFormatter;
+import com.dotafriends.dotafriends.models.AbilityUpgrade;
+import com.dotafriends.dotafriends.models.PlayerMatchData;
 import com.dotafriends.dotafriends.models.SingleMatchInfo;
 
 import rx.Observable;
@@ -160,70 +162,70 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             long userId = mContext.getSharedPreferences(MainActivity.SETTINGS, 0)
                     .getLong(MainActivity.PLAYER_ID, 0);
             int userSlot = 0;
-            for (SingleMatchInfo.PlayerMatchData player : match.players) {
-                if (player.accountId == userId)
-                    userSlot = player.playerSlot;
+            for (PlayerMatchData player : match.getPlayers()) {
+                if (player.getAccountId() == userId)
+                    userSlot = player.getPlayerSlot();
             }
 
             db.beginTransaction();
             try {
-                values.put(DatabaseContract.MatchInfo._ID, match.matchId);
-                values.put(DatabaseContract.MatchInfo.RADIANT_WIN, match.radiantWin);
-                values.put(DatabaseContract.MatchInfo.DURATION, match.duration);
-                values.put(DatabaseContract.MatchInfo.START_TIME, match.startTime);
-                values.put(DatabaseContract.MatchInfo.MATCH_SEQ_NUM, match.matchSeqNum);
-                values.put(DatabaseContract.MatchInfo.TOWER_STATUS_RADIANT, match.towerStatusRadiant);
-                values.put(DatabaseContract.MatchInfo.TOWER_STATUS_DIRE, match.towerStatusDire);
-                values.put(DatabaseContract.MatchInfo.BARRACKS_STATUS_RADIANT, match.barracksStatusRadiant);
-                values.put(DatabaseContract.MatchInfo.BARRACKS_STATUS_DIRE, match.barracksStatusDire);
-                values.put(DatabaseContract.MatchInfo.CLUSTER, match.cluster);
-                values.put(DatabaseContract.MatchInfo.FIRST_BLOOD_TIME, match.firstBloodTime);
-                values.put(DatabaseContract.MatchInfo.LOBBY_TYPE, match.lobbyType);
-                values.put(DatabaseContract.MatchInfo.LEAGUE_ID, match.leagueId);
-                values.put(DatabaseContract.MatchInfo.POSITIVE_VOTES, match.positiveVotes);
-                values.put(DatabaseContract.MatchInfo.NEGATIVE_VOTES, match.negativeVotes);
-                values.put(DatabaseContract.MatchInfo.GAME_MODE, match.gameMode);
-                values.put(DatabaseContract.MatchInfo.ENGINE, match.engine);
+                values.put(DatabaseContract.MatchInfo._ID, match.getMatchId());
+                values.put(DatabaseContract.MatchInfo.RADIANT_WIN, match.isRadiantWin());
+                values.put(DatabaseContract.MatchInfo.DURATION, match.getDuration());
+                values.put(DatabaseContract.MatchInfo.START_TIME, match.getStartTime());
+                values.put(DatabaseContract.MatchInfo.MATCH_SEQ_NUM, match.getMatchSeqNum());
+                values.put(DatabaseContract.MatchInfo.TOWER_STATUS_RADIANT, match.getTowerStatusRadiant());
+                values.put(DatabaseContract.MatchInfo.TOWER_STATUS_DIRE, match.getTowerStatusDire());
+                values.put(DatabaseContract.MatchInfo.BARRACKS_STATUS_RADIANT, match.getBarracksStatusRadiant());
+                values.put(DatabaseContract.MatchInfo.BARRACKS_STATUS_DIRE, match.getBarracksStatusDire());
+                values.put(DatabaseContract.MatchInfo.CLUSTER, match.getCluster());
+                values.put(DatabaseContract.MatchInfo.FIRST_BLOOD_TIME, match.getFirstBloodTime());
+                values.put(DatabaseContract.MatchInfo.LOBBY_TYPE, match.getLobbyType());
+                values.put(DatabaseContract.MatchInfo.LEAGUE_ID, match.getLeagueId());
+                values.put(DatabaseContract.MatchInfo.POSITIVE_VOTES, match.getPositiveVotes());
+                values.put(DatabaseContract.MatchInfo.NEGATIVE_VOTES, match.getNegativeVotes());
+                values.put(DatabaseContract.MatchInfo.GAME_MODE, match.getGameMode());
+                values.put(DatabaseContract.MatchInfo.ENGINE, match.getEngine());
 
                 db.insertOrThrow(DatabaseContract.MatchInfo.TABLE_NAME, null, values);
 
                 values.clear();
-                for (SingleMatchInfo.PlayerMatchData player : match.players) {
-                    values.put(DatabaseContract.PlayerMatchData.MATCH_ID, match.matchId);
-                    values.put(DatabaseContract.PlayerMatchData.ACCOUNT_ID, player.accountId);
-                    values.put(DatabaseContract.PlayerMatchData.PLAYER_SLOT, player.playerSlot);
-                    values.put(DatabaseContract.PlayerMatchData.HERO_ID, player.heroId);
-                    values.put(DatabaseContract.PlayerMatchData.ITEM_0, player.item0);
-                    values.put(DatabaseContract.PlayerMatchData.ITEM_1, player.item1);
-                    values.put(DatabaseContract.PlayerMatchData.ITEM_2, player.item2);
-                    values.put(DatabaseContract.PlayerMatchData.ITEM_3, player.item3);
-                    values.put(DatabaseContract.PlayerMatchData.ITEM_4, player.item4);
-                    values.put(DatabaseContract.PlayerMatchData.ITEM_5, player.item5);
-                    values.put(DatabaseContract.PlayerMatchData.KILLS, player.kills);
-                    values.put(DatabaseContract.PlayerMatchData.DEATHS, player.deaths);
-                    values.put(DatabaseContract.PlayerMatchData.ASSISTS, player.assists);
-                    values.put(DatabaseContract.PlayerMatchData.LEAVER_STATUS, player.leaverStatus);
-                    values.put(DatabaseContract.PlayerMatchData.GOLD, player.gold);
-                    values.put(DatabaseContract.PlayerMatchData.LAST_HITS, player.lastHits);
-                    values.put(DatabaseContract.PlayerMatchData.DENIES, player.denies);
-                    values.put(DatabaseContract.PlayerMatchData.GOLD_PER_MIN, player.goldPerMin);
-                    values.put(DatabaseContract.PlayerMatchData.XP_PER_MIN, player.xpPerMin);
-                    values.put(DatabaseContract.PlayerMatchData.GOLD_SPENT, player.goldSpent);
-                    values.put(DatabaseContract.PlayerMatchData.HERO_DAMAGE, player.heroDamage);
-                    values.put(DatabaseContract.PlayerMatchData.TOWER_DAMAGE, player.towerDamage);
-                    values.put(DatabaseContract.PlayerMatchData.HERO_HEALING, player.heroHealing);
-                    values.put(DatabaseContract.PlayerMatchData.LEVEL, player.level);
+                for (PlayerMatchData player : match.getPlayers()) {
+                    values.put(DatabaseContract.PlayerMatchData.MATCH_ID, match.getMatchId());
+                    values.put(DatabaseContract.PlayerMatchData.ACCOUNT_ID, player.getAccountId());
+                    values.put(DatabaseContract.PlayerMatchData.PLAYER_SLOT, player.getPlayerSlot());
+                    values.put(DatabaseContract.PlayerMatchData.HERO_ID, player.getHeroId());
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_0, player.getItem0());
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_1, player.getItem1());
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_2, player.getItem2());
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_3, player.getItem3());
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_4, player.getItem4());
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_5, player.getItem5());
+                    values.put(DatabaseContract.PlayerMatchData.KILLS, player.getKills());
+                    values.put(DatabaseContract.PlayerMatchData.DEATHS, player.getDeaths());
+                    values.put(DatabaseContract.PlayerMatchData.ASSISTS, player.getAssists());
+                    values.put(DatabaseContract.PlayerMatchData.LEAVER_STATUS, player.getLeaverStatus());
+                    values.put(DatabaseContract.PlayerMatchData.GOLD, player.getGold());
+                    values.put(DatabaseContract.PlayerMatchData.LAST_HITS, player.getLastHits());
+                    values.put(DatabaseContract.PlayerMatchData.DENIES, player.getDenies());
+                    values.put(DatabaseContract.PlayerMatchData.GOLD_PER_MIN, player.getGoldPerMin());
+                    values.put(DatabaseContract.PlayerMatchData.XP_PER_MIN, player.getXpPerMin());
+                    values.put(DatabaseContract.PlayerMatchData.GOLD_SPENT, player.getGoldSpent());
+                    values.put(DatabaseContract.PlayerMatchData.HERO_DAMAGE, player.getHeroDamage());
+                    values.put(DatabaseContract.PlayerMatchData.TOWER_DAMAGE, player.getTowerDamage());
+                    values.put(DatabaseContract.PlayerMatchData.HERO_HEALING, player.getHeroHealing());
+                    values.put(DatabaseContract.PlayerMatchData.LEVEL, player.getLevel());
 
                     db.insertOrThrow(DatabaseContract.PlayerMatchData.TABLE_NAME, null, values);
 
-                    if (player.abilityUpgrades != null) {
+                    if (player.getAbilityUpgrades() != null) {
                         values.clear();
-                        for (SingleMatchInfo.PlayerMatchData.AbilityUpgrade ability : player.abilityUpgrades) {
-                            values.put(DatabaseContract.AbilityUpgrades.MATCH_ID, match.matchId);
-                            values.put(DatabaseContract.AbilityUpgrades.PLAYER_SLOT, player.playerSlot);
-                            values.put(DatabaseContract.AbilityUpgrades.ABILITY, ability.ability);
-                            values.put(DatabaseContract.AbilityUpgrades.TIME, ability.time);
-                            values.put(DatabaseContract.AbilityUpgrades.LEVEL, ability.level);
+                        for (AbilityUpgrade ability : player.getAbilityUpgrades()) {
+                            values.put(DatabaseContract.AbilityUpgrades.MATCH_ID, match.getMatchId());
+                            values.put(DatabaseContract.AbilityUpgrades.PLAYER_SLOT, player.getPlayerSlot());
+                            values.put(DatabaseContract.AbilityUpgrades.ABILITY, ability.getAbility());
+                            values.put(DatabaseContract.AbilityUpgrades.TIME, ability.getTime());
+                            values.put(DatabaseContract.AbilityUpgrades.LEVEL, ability.getLevel());
 
                             db.insertOrThrow(DatabaseContract.AbilityUpgrades.TABLE_NAME,
                                     null, values);
@@ -231,20 +233,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         }
                     }
 
-                    if (player.accountId != userId && player.accountId != ANONYMOUS_ID) {
+                    if (player.getAccountId() != userId && player.getAccountId() != ANONYMOUS_ID) {
                         db.execSQL("INSERT OR IGNORE INTO " + DatabaseContract.Players.TABLE_NAME +
                                 " (" + DatabaseContract.Players.ACCOUNT_ID + ") VALUES (" +
-                                player.accountId + ")"
+                                player.getAccountId() + ")"
                         );
 
-                        if ((userSlot < 5 && player.playerSlot < 5) ||
-                                (userSlot > 5 && player.playerSlot > 5)) {
-                            if (MatchDataFormatter.isWin(userSlot, match.radiantWin ? 1 : 0)) {
+                        if ((userSlot < 5 && player.getPlayerSlot() < 5) ||
+                                (userSlot > 5 && player.getPlayerSlot() > 5)) {
+                            if (MatchDataFormatter.isWin(userSlot, match.isRadiantWin() ? 1 : 0)) {
                                 db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
                                         " SET " + DatabaseContract.Players.WINS_WITH + " = " +
                                         DatabaseContract.Players.WINS_WITH + " + 1 WHERE " +
                                         DatabaseContract.Players.ACCOUNT_ID + " = "
-                                        + player.accountId
+                                        + player.getAccountId()
                                 );
                             } else {
                                 db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
@@ -252,17 +254,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                                 " = " + DatabaseContract.Players.LOSSES_WITH +
                                                 " + 1 WHERE " +
                                                 DatabaseContract.Players.ACCOUNT_ID + " = " +
-                                                player.accountId
+                                                player.getAccountId()
                                 );
                             }
                         } else {
-                            if (MatchDataFormatter.isWin(userSlot, match.radiantWin ? 1 : 0)) {
+                            if (MatchDataFormatter.isWin(userSlot, match.isRadiantWin() ? 1 : 0)) {
                                 db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
                                                 " SET " + DatabaseContract.Players.WINS_AGAINST +
                                                 " = " + DatabaseContract.Players.WINS_AGAINST +
                                                 " + 1 WHERE " +
                                                 DatabaseContract.Players.ACCOUNT_ID + " = " +
-                                                player.accountId
+                                                player.getAccountId()
                                 );
                             } else {
                                 db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
@@ -270,7 +272,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                                 " = " + DatabaseContract.Players.LOSSES_AGAINST +
                                                 " + 1 WHERE " +
                                                 DatabaseContract.Players.ACCOUNT_ID + " = " +
-                                                player.accountId
+                                                player.getAccountId()
                                 );
                             }
                         }
