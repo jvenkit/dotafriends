@@ -47,6 +47,7 @@ public class MatchListFragment extends ListFragment
     private DatabaseHelper mDatabaseHelper;
     private String mListQuery;
     private Observable<Cursor> mListObservable;
+    private Listener mListener;
 
     private BroadcastReceiver mListReceiver = new BroadcastReceiver() {
         @Override
@@ -54,6 +55,10 @@ public class MatchListFragment extends ListFragment
             updateListView();
         }
     };
+
+    public interface Listener {
+        void onSelectMatch(long matchId);
+    }
 
     public MatchListFragment() {}
 
@@ -117,14 +122,7 @@ public class MatchListFragment extends ListFragment
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Log.d(TAG, "Click list item: " + id);
-        FragmentManager fm = getFragmentManager();
-        MatchDetailFragment matchFragment = MatchDetailFragment.newInstance(id);
-        fm.beginTransaction()
-                .replace(R.id.fragment_container, matchFragment, "detail")
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .addToBackStack(null)
-                .commit();
+        mListener.onSelectMatch(id);
     }
 
     @Override
@@ -132,11 +130,13 @@ public class MatchListFragment extends ListFragment
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mListReceiver,
                 new IntentFilter(UPDATE_LIST));
+        mListener = (Listener) getActivity();
     }
 
     @Override
     public void onPause() {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mListReceiver);
+        mListener = null;
         super.onPause();
     }
 

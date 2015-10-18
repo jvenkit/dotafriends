@@ -2,15 +2,17 @@ package com.dotafriends.dotafriends.activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.dotafriends.dotafriends.R;
+import com.dotafriends.dotafriends.fragments.MatchDetailFragment;
 import com.dotafriends.dotafriends.fragments.MatchListFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MatchListFragment.Listener{
 
     private static final String TAG = "MainActivity";
 
@@ -27,6 +29,17 @@ public class MainActivity extends AppCompatActivity {
             fm.beginTransaction().add(R.id.fragment_container, matchListFragment, "list")
                     .commit();
         }
+    }
+
+    @Override
+    public void onSelectMatch(long matchId) {
+        FragmentManager fm = getFragmentManager();
+        MatchDetailFragment matchFragment = MatchDetailFragment.newInstance(matchId);
+        fm.beginTransaction()
+                .replace(R.id.fragment_container, matchFragment, "detail")
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
