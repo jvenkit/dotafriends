@@ -5,11 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Data structure for holding the information of a single match deserialised from JSON objects
- * fetched using the Dota 2 Web API. Should only be used to temporarily hold match information
- * retrieved from API calls before writing to the database.
- */
 public class SingleMatchInfo extends WebApiResult{
 
     private List<PlayerMatchData> players = new ArrayList<>();
