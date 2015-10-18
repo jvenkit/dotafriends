@@ -46,7 +46,7 @@ public class DatabaseContract {
     public static final class PlayerMatchData {
         public static final String TABLE_NAME = "playermatchdata";
         public static final String MATCH_ID = "matchid";
-        public static final String PLAYER_ID = "playerid";
+        public static final String ACCOUNT_ID = "accountid";
         public static final String PLAYER_SLOT = "playerslot";
         public static final String HERO_ID = "heroid";
         public static final String ITEM_0 = "item0";

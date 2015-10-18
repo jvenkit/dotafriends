@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static DatabaseHelper sInstance = null;
 
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static final String DATABASE_NAME = "DotaFriendsDatabase.db";
 
     private static final long ANONYMOUS_ID = 4294967295L;
@@ -69,7 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_PLAYER_MATCH_DATA_TABLE =
             "CREATE TABLE " + DatabaseContract.PlayerMatchData.TABLE_NAME + " (" +
                     DatabaseContract.PlayerMatchData.MATCH_ID + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerMatchData.PLAYER_ID + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.ACCOUNT_ID + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.PlayerMatchData.PLAYER_SLOT + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.PlayerMatchData.HERO_ID + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.PlayerMatchData.ITEM_0 + INTEGER_TYPE + COMMA_SEP +
@@ -190,7 +190,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 values.clear();
                 for (SingleMatchInfo.PlayerMatchData player : match.players) {
                     values.put(DatabaseContract.PlayerMatchData.MATCH_ID, match.matchId);
-                    values.put(DatabaseContract.PlayerMatchData.PLAYER_ID, player.accountId);
+                    values.put(DatabaseContract.PlayerMatchData.ACCOUNT_ID, player.accountId);
                     values.put(DatabaseContract.PlayerMatchData.PLAYER_SLOT, player.playerSlot);
                     values.put(DatabaseContract.PlayerMatchData.HERO_ID, player.heroId);
                     values.put(DatabaseContract.PlayerMatchData.ITEM_0, player.item0);

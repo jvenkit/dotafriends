@@ -1,6 +1,8 @@
 package com.dotafriends.dotafriends.fragments;
 
 import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,9 +12,12 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
 
 import com.dotafriends.dotafriends.R;
 import com.dotafriends.dotafriends.activities.MainActivity;
@@ -64,9 +69,9 @@ public class MatchListFragment extends ListFragment
                 DatabaseContract.PlayerMatchData.ASSISTS + " FROM " +
                 DatabaseContract.MatchInfo.TABLE_NAME + " INNER JOIN " +
                 DatabaseContract.PlayerMatchData.TABLE_NAME + " ON " +
-                DatabaseContract.MatchInfo.TABLE_NAME + "." + DatabaseContract.MatchInfo._ID + "=" +
+                DatabaseContract.MatchInfo._ID + "=" +
                 DatabaseContract.PlayerMatchData.MATCH_ID + " WHERE " +
-                DatabaseContract.PlayerMatchData.PLAYER_ID + "=" +
+                DatabaseContract.PlayerMatchData.ACCOUNT_ID + "=" +
                 getActivity().getSharedPreferences(MainActivity.SETTINGS, 0)
                         .getLong(MainActivity.PLAYER_ID, 0)
                 + " ORDER BY " + DatabaseContract.MatchInfo._ID + " DESC";
@@ -106,6 +111,18 @@ public class MatchListFragment extends ListFragment
         super.onActivityCreated(savedInstanceState);
         setEmptyText(getString(R.string.empty_list));
         updateListView();
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Log.d(TAG, "Click list item: " + id);
+        FragmentManager fm = getFragmentManager();
+        MatchDetailFragment matchFragment = MatchDetailFragment.newInstance(id);
+        fm.beginTransaction()
+                .replace(R.id.fragment_container, matchFragment, "detail")
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override

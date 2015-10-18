@@ -55,7 +55,7 @@ public class MatchListAdapter extends CursorAdapter {
     }
 
     public void bindView(View v, Context context, Cursor c) {
-        long matchId = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.MatchInfo._ID));
+        long matchId = c.getLong(c.getColumnIndexOrThrow(DatabaseContract.MatchInfo._ID));
         int startTime = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.MatchInfo.START_TIME));
         int gameMode = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.MatchInfo.GAME_MODE));
         int duration = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.MatchInfo.DURATION));

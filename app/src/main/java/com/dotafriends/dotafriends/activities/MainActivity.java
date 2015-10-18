@@ -1,6 +1,7 @@
 package com.dotafriends.dotafriends.activities;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -20,11 +21,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        android.app.FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getFragmentManager();
         if (fm.findFragmentById(R.id.fragment_container) == null) {
             Fragment matchListFragment = new MatchListFragment();
-            fm.beginTransaction().add(R.id.fragment_container, matchListFragment)
+            fm.beginTransaction().add(R.id.fragment_container, matchListFragment, "list")
                     .commit();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStackImmediate();
+        } else {
+            super.onBackPressed();
         }
     }
 
