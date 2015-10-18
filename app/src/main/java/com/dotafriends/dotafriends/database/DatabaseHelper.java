@@ -231,7 +231,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                         if ((userSlot < 5 && player.playerSlot < 5) ||
                                 (userSlot > 5 && player.playerSlot > 5)) {
-                            if (MatchDataFormatter.formatWin(userSlot, match.radiantWin ? 1 : 0)) {
+                            if (MatchDataFormatter.isWin(userSlot, match.radiantWin ? 1 : 0)) {
                                 db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
                                         " SET " + DatabaseContract.Players.WINS_WITH + " = " +
                                         DatabaseContract.Players.WINS_WITH + " + 1 WHERE " +
@@ -248,7 +248,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 );
                             }
                         } else {
-                            if (MatchDataFormatter.formatWin(userSlot, match.radiantWin ? 1 : 0)) {
+                            if (MatchDataFormatter.isWin(userSlot, match.radiantWin ? 1 : 0)) {
                                 db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
                                                 " SET " + DatabaseContract.Players.WINS_AGAINST +
                                                 " = " + DatabaseContract.Players.WINS_AGAINST +

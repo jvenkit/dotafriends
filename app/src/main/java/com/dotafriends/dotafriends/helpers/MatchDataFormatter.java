@@ -99,7 +99,7 @@ public class MatchDataFormatter {
     /**
      * Returns a boolean representing whether or not the player in the given slot won the game
      */
-    public static boolean formatWin(int playerSlot, int radiantWin) {
+    public static boolean isWin(int playerSlot, int radiantWin) {
         if (playerSlot < 5) {
             return (radiantWin > 0);
         } else {
