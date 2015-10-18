@@ -15,6 +15,7 @@ import android.util.Log;
 import com.dotafriends.dotafriends.R;
 import com.dotafriends.dotafriends.activities.MainActivity;
 import com.dotafriends.dotafriends.database.DatabaseHelper;
+import com.dotafriends.dotafriends.fragments.MatchListFragment;
 import com.dotafriends.dotafriends.models.SingleMatchInfo;
 
 import rx.Observable;
@@ -31,7 +32,6 @@ public class MatchService extends Service {
     private static final String WAKE_LOCK_TAG = "MatchService";
 
     public static final String LATEST_MATCH_EXTRA = "com.dotafriends.dotafriends.latest_match";
-    public static final String LIST_UPDATED = "com.dotafriends.dotafriends.list_updated";
 
     private DatabaseHelper mDbHelper;
     private SteamService mWebService;
@@ -43,7 +43,7 @@ public class MatchService extends Service {
     private PowerManager.WakeLock mWakeLock;
 
     private void broadcastListUpdate() {
-        Intent intent = new Intent(LIST_UPDATED);
+        Intent intent = new Intent(MatchListFragment.UPDATE_LIST);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

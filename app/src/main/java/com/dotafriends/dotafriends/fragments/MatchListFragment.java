@@ -39,6 +39,8 @@ public class MatchListFragment extends ListFragment
 
     private static final String TAG = "MatchListFragment";
 
+    public static final String UPDATE_LIST = "com.dotafriends.dotafriends.update_list";
+
     private static final String COMMA_SEP = ",";
 
     private MatchListAdapter mAdapter;
@@ -129,7 +131,7 @@ public class MatchListFragment extends ListFragment
     public void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mListReceiver,
-                new IntentFilter(MatchService.LIST_UPDATED));
+                new IntentFilter(UPDATE_LIST));
     }
 
     @Override
