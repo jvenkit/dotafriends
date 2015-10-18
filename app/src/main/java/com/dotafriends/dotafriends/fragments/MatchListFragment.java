@@ -163,6 +163,7 @@ public class MatchListFragment extends ListFragment
                         editor.putLong(MainActivity.PLAYER_ID, playerId);
                         editor.apply();
                         rebuildListQuery();
+                        updateListView();
                         Intent intent = new Intent(getActivity(), MatchService.class);
                         getActivity().startService(intent);
                     }
