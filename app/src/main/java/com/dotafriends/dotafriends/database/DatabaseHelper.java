@@ -6,6 +6,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.dotafriends.dotafriends.activities.MainActivity;
 import com.dotafriends.dotafriends.models.SingleMatchInfo;
 
 import rx.Observable;
@@ -22,6 +23,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "DotaFriendsDatabase.db";
+
+    private static final long ANONYMOUS_ID = 4294967295L;
+
+    private Context mContext;
 
     private static final String INTEGER_TYPE = " INTEGER";
     private static final String ZERO_INTEGER_TYPE = " INTEGER DEFAULT 0";
@@ -111,6 +116,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mContext = context;
     }
 
     public static DatabaseHelper getInstance(Context context) {
@@ -144,6 +150,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return Observable.<Void>create(observer -> {
             ContentValues values = new ContentValues();
             SQLiteDatabase db = getWritableDatabase();
+            long userId = mContext.getSharedPreferences(MainActivity.SETTINGS, 0)
+                    .getLong(MainActivity.PLAYER_ID, 0);
+            int userSlot = 0;
+            for (SingleMatchInfo.PlayerMatchData player : match.players) {
+                if (player.accountId == userId)
+                    userSlot = player.playerSlot;
+            }
 
             db.beginTransaction();
             try {
@@ -166,7 +179,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.insertOrThrow(DatabaseContract.MatchInfo.TABLE_NAME, null, values);
 
                 values.clear();
-                for (SingleMatchInfo.PlayerPerformance player : match.players) {
+                for (SingleMatchInfo.PlayerMatchData player : match.players) {
                     values.put(DatabaseContract.PlayerMatchData.MATCH_ID, match.matchId);
                     values.put(DatabaseContract.PlayerMatchData.PLAYER_ID, player.accountId);
                     values.put(DatabaseContract.PlayerMatchData.PLAYER_SLOT, player.playerSlot);
@@ -196,7 +209,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                     if (player.abilityUpgrades != null) {
                         values.clear();
-                        for (SingleMatchInfo.PlayerPerformance.AbilityUpgrade ability : player.abilityUpgrades) {
+                        for (SingleMatchInfo.PlayerMatchData.AbilityUpgrade ability : player.abilityUpgrades) {
                             values.put(DatabaseContract.AbilityUpgrades.MATCH_ID, match.matchId);
                             values.put(DatabaseContract.AbilityUpgrades.PLAYER_SLOT, player.playerSlot);
                             values.put(DatabaseContract.AbilityUpgrades.ABILITY, ability.ability);
@@ -207,6 +220,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     null, values);
                             values.clear();
                         }
+                    }
+
+                    if (player.accountId != userId && player.accountId != ANONYMOUS_ID) {
+                        db.execSQL("INSERT OR IGNORE INTO " + DatabaseContract.Players.TABLE_NAME +
+                        " (" + DatabaseContract.Players.ACCOUNT_ID + ") VALUES (" +
+                        player.accountId + ")");
                     }
                 }
                 db.setTransactionSuccessful();

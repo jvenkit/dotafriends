@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class SingleMatchInfo extends WebApiResult{
 
-    public List<PlayerPerformance> players = new ArrayList<>();
+    public List<PlayerMatchData> players = new ArrayList<>();
     public boolean radiantWin;
     public int duration;
     public int startTime;
@@ -32,7 +32,7 @@ public class SingleMatchInfo extends WebApiResult{
     public int gameMode;
     public int engine;
 
-    public class PlayerPerformance {
+    public class PlayerMatchData {
 
         public long accountId;
         public int playerSlot;
