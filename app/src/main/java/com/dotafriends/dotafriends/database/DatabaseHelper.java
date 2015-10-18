@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.dotafriends.dotafriends.activities.MainActivity;
+import com.dotafriends.dotafriends.helpers.MatchDataFormatter;
 import com.dotafriends.dotafriends.models.SingleMatchInfo;
 
 import rx.Observable;
@@ -224,8 +225,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                     if (player.accountId != userId && player.accountId != ANONYMOUS_ID) {
                         db.execSQL("INSERT OR IGNORE INTO " + DatabaseContract.Players.TABLE_NAME +
-                        " (" + DatabaseContract.Players.ACCOUNT_ID + ") VALUES (" +
-                        player.accountId + ")");
+                                " (" + DatabaseContract.Players.ACCOUNT_ID + ") VALUES (" +
+                                player.accountId + ")"
+                        );
+
+                        if ((userSlot < 5 && player.playerSlot < 5) ||
+                                (userSlot > 5 && player.playerSlot > 5)) {
+                            if (MatchDataFormatter.formatWin(userSlot, match.radiantWin ? 1 : 0)) {
+                                db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
+                                        " SET " + DatabaseContract.Players.WINS_WITH + " = " +
+                                        DatabaseContract.Players.WINS_WITH + " + 1 WHERE " +
+                                        DatabaseContract.Players.ACCOUNT_ID + " = "
+                                        + player.accountId
+                                );
+                            } else {
+                                db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
+                                                " SET " + DatabaseContract.Players.LOSSES_WITH +
+                                                " = " + DatabaseContract.Players.LOSSES_WITH +
+                                                " + 1 WHERE " +
+                                                DatabaseContract.Players.ACCOUNT_ID + " = " +
+                                                player.accountId
+                                );
+                            }
+                        } else {
+                            if (MatchDataFormatter.formatWin(userSlot, match.radiantWin ? 1 : 0)) {
+                                db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
+                                                " SET " + DatabaseContract.Players.WINS_AGAINST +
+                                                " = " + DatabaseContract.Players.WINS_AGAINST +
+                                                " + 1 WHERE " +
+                                                DatabaseContract.Players.ACCOUNT_ID + " = " +
+                                                player.accountId
+                                );
+                            } else {
+                                db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
+                                                " SET " + DatabaseContract.Players.LOSSES_AGAINST +
+                                                " = " + DatabaseContract.Players.LOSSES_AGAINST +
+                                                " + 1 WHERE " +
+                                                DatabaseContract.Players.ACCOUNT_ID + " = " +
+                                                player.accountId
+                                );
+                            }
+                        }
                     }
                 }
                 db.setTransactionSuccessful();
