@@ -15,6 +15,7 @@ import android.util.Log;
 import com.dotafriends.dotafriends.R;
 import com.dotafriends.dotafriends.activities.MainActivity;
 import com.dotafriends.dotafriends.database.DatabaseHelper;
+import com.dotafriends.dotafriends.models.SingleMatchInfo;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -89,7 +90,7 @@ public class MatchService extends Service {
                 .flatMap(mDbHelper::insertMatch)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Void>() {
+                .subscribe(new Subscriber<SingleMatchInfo>() {
                     @Override
                     public void onCompleted() {
                         Log.d(TAG, "Finished");
@@ -120,9 +121,9 @@ public class MatchService extends Service {
                     }
 
                     @Override
-                    public void onNext(Void v) {
+                    public void onNext(SingleMatchInfo match) {
                         mProgress += 1;
-                        mBuilder.setContentText("Adding matches to database")
+                        mBuilder.setContentText("Adding match : " + match.matchId)
                                 .setProgress(mProgressMax, mProgress, false);
                         mNotifyManager.notify(0, mBuilder.build());
                         broadcastListUpdate();

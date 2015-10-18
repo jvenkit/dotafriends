@@ -147,8 +147,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public Observable<Void> insertMatch(SingleMatchInfo match) {
-        return Observable.<Void>create(observer -> {
+    public Observable<SingleMatchInfo> insertMatch(SingleMatchInfo match) {
+        return Observable.<SingleMatchInfo>create(observer -> {
             ContentValues values = new ContentValues();
             SQLiteDatabase db = getWritableDatabase();
             long userId = mContext.getSharedPreferences(MainActivity.SETTINGS, 0)
@@ -269,7 +269,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     }
                 }
                 db.setTransactionSuccessful();
-                observer.onNext(null);
+                observer.onNext(match);
             } catch (SQLException e) {
                 observer.onError(e);
             } finally {
