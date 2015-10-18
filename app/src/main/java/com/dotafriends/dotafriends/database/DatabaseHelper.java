@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static DatabaseHelper sInstance = null;
 
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static final String DATABASE_NAME = "DotaFriendsDatabase.db";
 
     private static final long ANONYMOUS_ID = 4294967295L;
@@ -40,8 +40,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DatabaseContract.MatchInfo.DURATION + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.MatchInfo.START_TIME + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.MatchInfo.MATCH_SEQ_NUM + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.MatchInfo.TOWER_STATUS_RADIANT + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.MatchInfo.TOWER_STATUS_DIRE + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.MatchInfo.TOWER_STATUS_RADIANT + INTEGER_TYPE +
+                    " DEFAULT 65536" + COMMA_SEP +
+                    DatabaseContract.MatchInfo.TOWER_STATUS_DIRE + INTEGER_TYPE +
+                    " DEFAULT 65536" + COMMA_SEP +
+                    DatabaseContract.MatchInfo.BARRACKS_STATUS_RADIANT + INTEGER_TYPE +
+                    " DEFAULT 256" + COMMA_SEP +
+                    DatabaseContract.MatchInfo.BARRACKS_STATUS_DIRE + INTEGER_TYPE +
+                    " DEFAULT 256" + COMMA_SEP +
                     DatabaseContract.MatchInfo.CLUSTER + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.MatchInfo.FIRST_BLOOD_TIME + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.MatchInfo.LOBBY_TYPE + INTEGER_TYPE + COMMA_SEP +
@@ -75,7 +81,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DatabaseContract.PlayerMatchData.KILLS + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.PlayerMatchData.DEATHS + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.PlayerMatchData.ASSISTS+ INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerMatchData.LEAVER_STATUS + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.LEAVER_STATUS + ZERO_INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.PlayerMatchData.GOLD + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.PlayerMatchData.LAST_HITS + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.PlayerMatchData.DENIES + INTEGER_TYPE + COMMA_SEP +
@@ -168,6 +174,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 values.put(DatabaseContract.MatchInfo.MATCH_SEQ_NUM, match.matchSeqNum);
                 values.put(DatabaseContract.MatchInfo.TOWER_STATUS_RADIANT, match.towerStatusRadiant);
                 values.put(DatabaseContract.MatchInfo.TOWER_STATUS_DIRE, match.towerStatusDire);
+                values.put(DatabaseContract.MatchInfo.BARRACKS_STATUS_RADIANT, match.barracksStatusRadiant);
+                values.put(DatabaseContract.MatchInfo.BARRACKS_STATUS_DIRE, match.barracksStatusDire);
                 values.put(DatabaseContract.MatchInfo.CLUSTER, match.cluster);
                 values.put(DatabaseContract.MatchInfo.FIRST_BLOOD_TIME, match.firstBloodTime);
                 values.put(DatabaseContract.MatchInfo.LOBBY_TYPE, match.lobbyType);

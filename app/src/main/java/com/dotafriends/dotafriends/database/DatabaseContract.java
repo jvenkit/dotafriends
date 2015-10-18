@@ -21,6 +21,8 @@ public class DatabaseContract {
         public static final String MATCH_SEQ_NUM = "matchseqnum";
         public static final String TOWER_STATUS_RADIANT = "towerstatusradiant";
         public static final String TOWER_STATUS_DIRE = "towerstatusdire";
+        public static final String BARRACKS_STATUS_RADIANT = "barrackstatusradiant";
+        public static final String BARRACKS_STATUS_DIRE = "barracksstatusdire";
         public static final String CLUSTER = "cluster";
         public static final String FIRST_BLOOD_TIME = "firstbloodtime";
         public static final String LOBBY_TYPE = "lobbytype";
