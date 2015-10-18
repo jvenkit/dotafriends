@@ -57,16 +57,16 @@ public class MatchListFragment extends ListFragment
                 DatabaseContract.MatchInfo.RADIANT_WIN + COMMA_SEP +
                 DatabaseContract.MatchInfo.GAME_MODE + COMMA_SEP +
                 DatabaseContract.MatchInfo.START_TIME + COMMA_SEP +
-                DatabaseContract.PlayerPerformance.PLAYER_SLOT + COMMA_SEP +
-                DatabaseContract.PlayerPerformance.HERO_ID + COMMA_SEP +
-                DatabaseContract.PlayerPerformance.KILLS + COMMA_SEP +
-                DatabaseContract.PlayerPerformance.DEATHS + COMMA_SEP +
-                DatabaseContract.PlayerPerformance.ASSISTS + " FROM " +
+                DatabaseContract.PlayerMatchData.PLAYER_SLOT + COMMA_SEP +
+                DatabaseContract.PlayerMatchData.HERO_ID + COMMA_SEP +
+                DatabaseContract.PlayerMatchData.KILLS + COMMA_SEP +
+                DatabaseContract.PlayerMatchData.DEATHS + COMMA_SEP +
+                DatabaseContract.PlayerMatchData.ASSISTS + " FROM " +
                 DatabaseContract.MatchInfo.TABLE_NAME + " INNER JOIN " +
-                DatabaseContract.PlayerPerformance.TABLE_NAME + " ON " +
+                DatabaseContract.PlayerMatchData.TABLE_NAME + " ON " +
                 DatabaseContract.MatchInfo.TABLE_NAME + "." + DatabaseContract.MatchInfo._ID + "=" +
-                DatabaseContract.PlayerPerformance.MATCH_ID + " WHERE " +
-                DatabaseContract.PlayerPerformance.PLAYER_ID + "=" +
+                DatabaseContract.PlayerMatchData.MATCH_ID + " WHERE " +
+                DatabaseContract.PlayerMatchData.PLAYER_ID + "=" +
                 getActivity().getSharedPreferences(MainActivity.SETTINGS, 0)
                         .getLong(MainActivity.PLAYER_ID, 0)
                 + " ORDER BY " + DatabaseContract.MatchInfo._ID + " DESC";

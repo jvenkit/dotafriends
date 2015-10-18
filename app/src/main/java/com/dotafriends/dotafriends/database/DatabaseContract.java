@@ -30,17 +30,19 @@ public class DatabaseContract {
         public static final String NEGATIVE_VOTES = "negativevote";
         public static final String GAME_MODE = "gamemode";
         public static final String ENGINE = "engine";
-        public static final String ERROR = "error";
     }
 
     public static abstract class Players implements BaseColumns {
         public static final String TABLE_NAME = "players";
-        public static final String WINS = "wins";
-        public static final String LOSSES = "losses";
+        public static final String ACCOUNT_ID = "accountid";
+        public static final String WINS_WITH = "winswith";
+        public static final String LOSSES_WITH = "losseswith";
+        public static final String WINS_AGAINST = "winsagainst";
+        public static final String LOSSES_AGAINST = "lossesagainst";
     }
 
-    public static final class PlayerPerformance {
-        public static final String TABLE_NAME = "playerperformance";
+    public static final class PlayerMatchData {
+        public static final String TABLE_NAME = "playermatchdata";
         public static final String MATCH_ID = "matchid";
         public static final String PLAYER_ID = "playerid";
         public static final String PLAYER_SLOT = "playerslot";
@@ -70,10 +72,10 @@ public class DatabaseContract {
     public static final class AbilityUpgrades {
         public static final String TABLE_NAME = "abilityupgrades";
         public static final String MATCH_ID = "matchid";
-        public static final String PLAYER_ID = "playerid";
+        public static final String PLAYER_SLOT = "playerslot";
+        public static final String LEVEL = "level";
         public static final String ABILITY = "ability";
         public static final String TIME = "time";
-        public static final String LEVEL = "level";
     }
 
 }

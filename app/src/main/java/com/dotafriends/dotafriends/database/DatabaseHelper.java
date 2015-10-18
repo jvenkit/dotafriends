@@ -20,11 +20,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static DatabaseHelper sInstance = null;
 
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "DotaFriendsDatabase.db";
 
-    private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
+    private static final String ZERO_INTEGER_TYPE = " INTEGER DEFAULT 0";
     private static final String COMMA_SEP = ",";
 
     private static final String SQL_CREATE_MATCH_INFO_TABLE =
@@ -44,52 +44,58 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DatabaseContract.MatchInfo.POSITIVE_VOTES + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.MatchInfo.NEGATIVE_VOTES + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.MatchInfo.GAME_MODE + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.MatchInfo.ENGINE + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.MatchInfo.ERROR + TEXT_TYPE + " )";
+                    DatabaseContract.MatchInfo.ENGINE + INTEGER_TYPE + " )";
 
     private static final String SQL_CREATE_PLAYERS_TABLE =
             "CREATE TABLE " + DatabaseContract.Players.TABLE_NAME + " (" +
-                    DatabaseContract.Players._ID + INTEGER_TYPE + " PRIMARY KEY" + COMMA_SEP +
-                    DatabaseContract.Players.WINS + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.Players.LOSSES + INTEGER_TYPE + " )";
+                    DatabaseContract.Players.ACCOUNT_ID + INTEGER_TYPE + " UNIQUE" + COMMA_SEP +
+                    DatabaseContract.Players.WINS_WITH + ZERO_INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.Players.LOSSES_WITH + ZERO_INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.Players.WINS_AGAINST + ZERO_INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.Players.LOSSES_AGAINST + ZERO_INTEGER_TYPE + " )";
 
-    private static final String SQL_CREATE_PLAYER_PERFORMANCE_TABLE =
-            "CREATE TABLE " + DatabaseContract.PlayerPerformance.TABLE_NAME + " (" +
-                    DatabaseContract.PlayerPerformance.MATCH_ID + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.PLAYER_ID + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.PLAYER_SLOT + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.HERO_ID + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.ITEM_0 + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.ITEM_1 + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.ITEM_2 + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.ITEM_3 + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.ITEM_4 + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.ITEM_5 + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.KILLS + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.DEATHS + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.ASSISTS+ INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.LEAVER_STATUS + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.GOLD + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.LAST_HITS + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.DENIES + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.GOLD_PER_MIN + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.XP_PER_MIN + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.GOLD_SPENT + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.HERO_DAMAGE + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.TOWER_DAMAGE + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.HERO_HEALING + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.PlayerPerformance.LEVEL + INTEGER_TYPE + COMMA_SEP +
-                    "FOREIGN KEY (" + DatabaseContract.PlayerPerformance.MATCH_ID + ") REFERENCES " +
+    private static final String SQL_CREATE_PLAYER_MATCH_DATA_TABLE =
+            "CREATE TABLE " + DatabaseContract.PlayerMatchData.TABLE_NAME + " (" +
+                    DatabaseContract.PlayerMatchData.MATCH_ID + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.PLAYER_ID + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.PLAYER_SLOT + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.HERO_ID + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.ITEM_0 + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.ITEM_1 + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.ITEM_2 + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.ITEM_3 + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.ITEM_4 + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.ITEM_5 + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.KILLS + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.DEATHS + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.ASSISTS+ INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.LEAVER_STATUS + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.GOLD + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.LAST_HITS + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.DENIES + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.GOLD_PER_MIN + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.XP_PER_MIN + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.GOLD_SPENT + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.HERO_DAMAGE + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.TOWER_DAMAGE + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.HERO_HEALING + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.LEVEL + INTEGER_TYPE + COMMA_SEP +
+                    "PRIMARY KEY (" + DatabaseContract.PlayerMatchData.MATCH_ID + COMMA_SEP +
+                    DatabaseContract.PlayerMatchData.PLAYER_SLOT + " )" + COMMA_SEP +
+                    "FOREIGN KEY (" + DatabaseContract.PlayerMatchData.MATCH_ID + ") REFERENCES " +
                     DatabaseContract.MatchInfo.TABLE_NAME + "(" + DatabaseContract.MatchInfo._ID +
                     "))";
 
     private static final String SQL_CREATE_ABILITY_UPGRADES_TABLE =
             "CREATE TABLE " + DatabaseContract.AbilityUpgrades.TABLE_NAME + " (" +
                     DatabaseContract.AbilityUpgrades.MATCH_ID + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.AbilityUpgrades.PLAYER_ID + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.AbilityUpgrades.PLAYER_SLOT + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.AbilityUpgrades.LEVEL + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.AbilityUpgrades.ABILITY + INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.AbilityUpgrades.TIME + INTEGER_TYPE + COMMA_SEP +
-                    DatabaseContract.AbilityUpgrades.LEVEL + INTEGER_TYPE + COMMA_SEP +
+                    "PRIMARY KEY (" + DatabaseContract.AbilityUpgrades.MATCH_ID + COMMA_SEP +
+                    DatabaseContract.AbilityUpgrades.PLAYER_SLOT + COMMA_SEP +
+                    DatabaseContract.AbilityUpgrades.LEVEL + ")" + COMMA_SEP +
                     "FOREIGN KEY (" + DatabaseContract.AbilityUpgrades.MATCH_ID + ") REFERENCES " +
                     DatabaseContract.MatchInfo.TABLE_NAME + "(" + DatabaseContract.MatchInfo._ID +
                     "))";
@@ -98,8 +104,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "DROP TABLE IF EXISTS " + DatabaseContract.MatchInfo.TABLE_NAME;
     private static final String SQL_DELETE_PLAYERS_TABLE =
             "DROP TABLE IF EXISTS " + DatabaseContract.Players.TABLE_NAME;
-    private static final String SQL_DELETE_PLAYER_PERFORMANCE_TABLE =
-            "DROP TABLE IF EXISTS " + DatabaseContract.PlayerPerformance.TABLE_NAME;
+    private static final String SQL_DELETE_PLAYER_MATCH_DATA_TABLE =
+            "DROP TABLE IF EXISTS " + DatabaseContract.PlayerMatchData.TABLE_NAME;
     private static final String SQL_DELETE_ABILITY_UPGRADES_TABLE =
             "DROP TABLE IF EXISTS " + DatabaseContract.AbilityUpgrades.TABLE_NAME;
 
@@ -118,14 +124,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_MATCH_INFO_TABLE);
         db.execSQL(SQL_CREATE_PLAYERS_TABLE);
-        db.execSQL(SQL_CREATE_PLAYER_PERFORMANCE_TABLE);
+        db.execSQL(SQL_CREATE_PLAYER_MATCH_DATA_TABLE);
         db.execSQL(SQL_CREATE_ABILITY_UPGRADES_TABLE);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(SQL_DELETE_MATCH_INFO_TABLE);
         db.execSQL(SQL_DELETE_PLAYERS_TABLE);
-        db.execSQL(SQL_DELETE_PLAYER_PERFORMANCE_TABLE);
+        db.execSQL(SQL_DELETE_PLAYER_MATCH_DATA_TABLE);
         db.execSQL(SQL_DELETE_ABILITY_UPGRADES_TABLE);
         onCreate(db);
     }
@@ -161,38 +167,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 values.clear();
                 for (SingleMatchInfo.PlayerPerformance player : match.players) {
-                    values.put(DatabaseContract.PlayerPerformance.MATCH_ID, match.matchId);
-                    values.put(DatabaseContract.PlayerPerformance.PLAYER_ID, player.accountId);
-                    values.put(DatabaseContract.PlayerPerformance.PLAYER_SLOT, player.playerSlot);
-                    values.put(DatabaseContract.PlayerPerformance.HERO_ID, player.heroId);
-                    values.put(DatabaseContract.PlayerPerformance.ITEM_0, player.item0);
-                    values.put(DatabaseContract.PlayerPerformance.ITEM_1, player.item1);
-                    values.put(DatabaseContract.PlayerPerformance.ITEM_2, player.item2);
-                    values.put(DatabaseContract.PlayerPerformance.ITEM_3, player.item3);
-                    values.put(DatabaseContract.PlayerPerformance.ITEM_4, player.item4);
-                    values.put(DatabaseContract.PlayerPerformance.ITEM_5, player.item5);
-                    values.put(DatabaseContract.PlayerPerformance.KILLS, player.kills);
-                    values.put(DatabaseContract.PlayerPerformance.DEATHS, player.deaths);
-                    values.put(DatabaseContract.PlayerPerformance.ASSISTS, player.assists);
-                    values.put(DatabaseContract.PlayerPerformance.LEAVER_STATUS, player.leaverStatus);
-                    values.put(DatabaseContract.PlayerPerformance.GOLD, player.gold);
-                    values.put(DatabaseContract.PlayerPerformance.LAST_HITS, player.lastHits);
-                    values.put(DatabaseContract.PlayerPerformance.DENIES, player.denies);
-                    values.put(DatabaseContract.PlayerPerformance.GOLD_PER_MIN, player.goldPerMin);
-                    values.put(DatabaseContract.PlayerPerformance.XP_PER_MIN, player.xpPerMin);
-                    values.put(DatabaseContract.PlayerPerformance.GOLD_SPENT, player.goldSpent);
-                    values.put(DatabaseContract.PlayerPerformance.HERO_DAMAGE, player.heroDamage);
-                    values.put(DatabaseContract.PlayerPerformance.TOWER_DAMAGE, player.towerDamage);
-                    values.put(DatabaseContract.PlayerPerformance.HERO_HEALING, player.heroHealing);
-                    values.put(DatabaseContract.PlayerPerformance.LEVEL, player.level);
+                    values.put(DatabaseContract.PlayerMatchData.MATCH_ID, match.matchId);
+                    values.put(DatabaseContract.PlayerMatchData.PLAYER_ID, player.accountId);
+                    values.put(DatabaseContract.PlayerMatchData.PLAYER_SLOT, player.playerSlot);
+                    values.put(DatabaseContract.PlayerMatchData.HERO_ID, player.heroId);
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_0, player.item0);
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_1, player.item1);
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_2, player.item2);
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_3, player.item3);
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_4, player.item4);
+                    values.put(DatabaseContract.PlayerMatchData.ITEM_5, player.item5);
+                    values.put(DatabaseContract.PlayerMatchData.KILLS, player.kills);
+                    values.put(DatabaseContract.PlayerMatchData.DEATHS, player.deaths);
+                    values.put(DatabaseContract.PlayerMatchData.ASSISTS, player.assists);
+                    values.put(DatabaseContract.PlayerMatchData.LEAVER_STATUS, player.leaverStatus);
+                    values.put(DatabaseContract.PlayerMatchData.GOLD, player.gold);
+                    values.put(DatabaseContract.PlayerMatchData.LAST_HITS, player.lastHits);
+                    values.put(DatabaseContract.PlayerMatchData.DENIES, player.denies);
+                    values.put(DatabaseContract.PlayerMatchData.GOLD_PER_MIN, player.goldPerMin);
+                    values.put(DatabaseContract.PlayerMatchData.XP_PER_MIN, player.xpPerMin);
+                    values.put(DatabaseContract.PlayerMatchData.GOLD_SPENT, player.goldSpent);
+                    values.put(DatabaseContract.PlayerMatchData.HERO_DAMAGE, player.heroDamage);
+                    values.put(DatabaseContract.PlayerMatchData.TOWER_DAMAGE, player.towerDamage);
+                    values.put(DatabaseContract.PlayerMatchData.HERO_HEALING, player.heroHealing);
+                    values.put(DatabaseContract.PlayerMatchData.LEVEL, player.level);
 
-                    db.insertOrThrow(DatabaseContract.PlayerPerformance.TABLE_NAME, null, values);
+                    db.insertOrThrow(DatabaseContract.PlayerMatchData.TABLE_NAME, null, values);
 
                     if (player.abilityUpgrades != null) {
                         values.clear();
                         for (SingleMatchInfo.PlayerPerformance.AbilityUpgrade ability : player.abilityUpgrades) {
                             values.put(DatabaseContract.AbilityUpgrades.MATCH_ID, match.matchId);
-                            values.put(DatabaseContract.AbilityUpgrades.PLAYER_ID, player.accountId);
+                            values.put(DatabaseContract.AbilityUpgrades.PLAYER_SLOT, player.playerSlot);
                             values.put(DatabaseContract.AbilityUpgrades.ABILITY, ability.ability);
                             values.put(DatabaseContract.AbilityUpgrades.TIME, ability.time);
                             values.put(DatabaseContract.AbilityUpgrades.LEVEL, ability.level);
@@ -221,8 +227,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             db.delete(DatabaseContract.MatchInfo.TABLE_NAME, whereClause, null);
 
-            whereClause = DatabaseContract.PlayerPerformance.MATCH_ID + " = " + String.valueOf(matchId);
-            db.delete(DatabaseContract.PlayerPerformance.TABLE_NAME, whereClause, null);
+            whereClause = DatabaseContract.PlayerMatchData.MATCH_ID + " = " + String.valueOf(matchId);
+            db.delete(DatabaseContract.PlayerMatchData.TABLE_NAME, whereClause, null);
 
             whereClause = DatabaseContract.AbilityUpgrades.MATCH_ID + " = " + String.valueOf(matchId);
             db.delete(DatabaseContract.AbilityUpgrades.TABLE_NAME, whereClause, null);
@@ -253,17 +259,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 db.delete(DatabaseContract.MatchInfo.TABLE_NAME, whereClause, whereArgs);
 
-                whereClause = DatabaseContract.PlayerPerformance.MATCH_ID + " = ?";
+                whereClause = DatabaseContract.PlayerMatchData.MATCH_ID + " = ?";
 
                 if (matchIds.length > 1) {
                     StringBuilder sb = new StringBuilder(whereClause);
                     for (int i = 1; i < matchIds.length; i++) {
-                        sb.append(" OR " + DatabaseContract.PlayerPerformance.MATCH_ID + " = ?");
+                        sb.append(" OR " + DatabaseContract.PlayerMatchData.MATCH_ID + " = ?");
                     }
                     whereClause = sb.toString();
                 }
 
-                db.delete(DatabaseContract.PlayerPerformance.TABLE_NAME, whereClause, whereArgs);
+                db.delete(DatabaseContract.PlayerMatchData.TABLE_NAME, whereClause, whereArgs);
 
                 whereClause = DatabaseContract.AbilityUpgrades.MATCH_ID + " = ?";
 
@@ -288,7 +294,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             db.delete(DatabaseContract.MatchInfo.TABLE_NAME, null, null);
             db.delete(DatabaseContract.AbilityUpgrades.TABLE_NAME, null, null);
-            db.delete(DatabaseContract.PlayerPerformance.TABLE_NAME, null, null);
+            db.delete(DatabaseContract.PlayerMatchData.TABLE_NAME, null, null);
+            db.delete(DatabaseContract.Players.TABLE_NAME, null, null);
 
             observer.onCompleted();
         });

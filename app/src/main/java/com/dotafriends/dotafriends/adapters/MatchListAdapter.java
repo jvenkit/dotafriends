@@ -60,12 +60,12 @@ public class MatchListAdapter extends CursorAdapter {
         int gameMode = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.MatchInfo.GAME_MODE));
         int duration = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.MatchInfo.DURATION));
         int radiantWin = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.MatchInfo.RADIANT_WIN));
-        int playerSlot = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.PlayerPerformance
+        int playerSlot = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.PlayerMatchData
                 .PLAYER_SLOT));
-        int heroId = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.PlayerPerformance.HERO_ID));
-        int kills = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.PlayerPerformance.KILLS));
-        int deaths = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.PlayerPerformance.DEATHS));
-        int assists = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.PlayerPerformance.ASSISTS));
+        int heroId = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_ID));
+        int kills = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.KILLS));
+        int deaths = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.DEATHS));
+        int assists = c.getInt(c.getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.ASSISTS));
 
         ViewHolder holder = (ViewHolder) v.getTag();
         holder.matchId.setText(String.valueOf(matchId));
