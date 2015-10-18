@@ -70,7 +70,7 @@ public class MatchListAdapter extends CursorAdapter {
         ViewHolder holder = (ViewHolder) v.getTag();
         holder.matchId.setText(String.valueOf(matchId));
         holder.startTime.setText(MatchDataFormatter.formatStartTime(startTime));
-        holder.gameMode.setText(MatchDataFormatter.formatGameMode(gameMode));
+        holder.gameMode.setText(MatchDataFormatter.getGameMode(gameMode));
         holder.duration.setText(MatchDataFormatter.formatDuration(duration));
         holder.win.setChecked(MatchDataFormatter.isWin(playerSlot, radiantWin));
         holder.kda.setText(MatchDataFormatter.formatKda(kills, deaths, assists));

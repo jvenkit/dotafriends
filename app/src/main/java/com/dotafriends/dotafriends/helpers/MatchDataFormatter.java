@@ -19,7 +19,7 @@ public class MatchDataFormatter {
      * Returns a game mode String. The gameMode argument is an integer that
      * corresponds to a game mode.
      */
-    public static String formatGameMode(int gameMode) {
+    public static String getGameMode(int gameMode) {
         switch (gameMode) {
             case 0:
                 return "None";
