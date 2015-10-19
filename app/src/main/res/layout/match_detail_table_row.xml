@@ -1,47 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
           android:layout_width="match_parent"
-          android:layout_height="match_parent">
-    <ImageView
-        android:id="@+id/table_row_hero_icon"
-        android:padding="3dp"/>
+          android:layout_height="match_parent" >
     <TextView
         android:id="@+id/table_row_player_name"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_level"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_kills"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_deaths"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_assists"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_gold"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_last_hits"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_denies"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_xp_per_min"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_gold_per_min"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_hero_damage"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_hero_healing"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_tower_damage"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
 </TableRow>

@@ -3,6 +3,7 @@ package com.dotafriends.dotafriends.fragments;
 import android.app.Fragment;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -18,6 +21,7 @@ import com.dotafriends.dotafriends.R;
 import com.dotafriends.dotafriends.database.DatabaseContract;
 import com.dotafriends.dotafriends.database.DatabaseHelper;
 import com.dotafriends.dotafriends.helpers.MatchDataFormatter;
+import com.dotafriends.dotafriends.models.MatchHistory;
 
 /**
  * Fragment that shows the details of a single match
@@ -37,11 +41,15 @@ public class MatchDetailFragment extends Fragment {
     private void getCursors(long matchId) {
         SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
 
-        String sql = "SELECT * FROM " + DatabaseContract.MatchInfo.TABLE_NAME + " WHERE " +
-                DatabaseContract.MatchInfo._ID + " = " + matchId;
-        mMatchInfoCursor = db.rawQuery(sql, null);
+        String where = DatabaseContract.MatchInfo._ID + " = " + matchId;
+        String[] columns = {
+                DatabaseContract.MatchInfo.RADIANT_WIN,
+                DatabaseContract.MatchInfo.DURATION,
+                DatabaseContract.MatchInfo.START_TIME
+        };
+        mMatchInfoCursor = db.query(DatabaseContract.MatchInfo.TABLE_NAME, columns, where, null, null, null, null);
 
-        sql = "SELECT * FROM " + DatabaseContract.PlayerMatchData.TABLE_NAME + " WHERE " +
+        String sql = "SELECT * FROM " + DatabaseContract.PlayerMatchData.TABLE_NAME + " WHERE " +
                 DatabaseContract.PlayerMatchData.MATCH_ID + " = " + matchId + " ORDER BY " +
                 DatabaseContract.PlayerMatchData.PLAYER_SLOT + " ASC";
         mPlayerMatchCursor = db.rawQuery(sql, null);
@@ -50,7 +58,6 @@ public class MatchDetailFragment extends Fragment {
     private View generateTableRow(int heroSlot) {
         TableRow tableRow = new TableRow(getActivity());
         View v = getActivity().getLayoutInflater().inflate(R.layout.match_detail_table_row, tableRow, false);
-        ImageView heroIconView = (ImageView)v.findViewById(R.id.table_row_hero_icon);
         TextView playerNameView = (TextView)v.findViewById(R.id.table_row_player_name);
         TextView levelView = (TextView)v.findViewById(R.id.table_row_level);
         TextView killsView = (TextView)v.findViewById(R.id.table_row_kills);
@@ -66,8 +73,6 @@ public class MatchDetailFragment extends Fragment {
         TextView towerDamageView = (TextView)v.findViewById(R.id.table_row_tower_damage);
 
         mPlayerMatchCursor.moveToPosition(heroSlot);
-        int heroId = mPlayerMatchCursor.getInt(mPlayerMatchCursor
-                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_ID));
         long accountId = mPlayerMatchCursor.getLong(mPlayerMatchCursor
                 .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.ACCOUNT_ID));
         int level = mPlayerMatchCursor.getInt(mPlayerMatchCursor
@@ -95,7 +100,6 @@ public class MatchDetailFragment extends Fragment {
         int towerDamage = mPlayerMatchCursor.getInt(mPlayerMatchCursor
                 .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.TOWER_DAMAGE));
 
-        heroIconView.setImageResource(MatchDataFormatter.getHeroIconDrawable(heroId));
         playerNameView.setText(accountId == ANONYMOUS_ID ? "Anonymous" : String.valueOf(accountId));
         levelView.setText(String.valueOf(level));
         killsView.setText(String.valueOf(kills));
@@ -135,16 +139,39 @@ public class MatchDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_match_detail, container, false);
-        TableLayout radiantTable = (TableLayout)view.findViewById(R.id.radiant_table);
-        TableLayout direTable = (TableLayout)view.findViewById(R.id.dire_table);
-        inflater.inflate(R.layout.match_detail_table_header, radiantTable, true);
-        inflater.inflate(R.layout.match_detail_table_header, direTable, true);
+        RelativeLayout radiantRelativeLayout = (RelativeLayout)view.findViewById(R.id.radiant_table);
+        RelativeLayout direRelativeLayout = (RelativeLayout)view.findViewById(R.id.dire_table);
+        LinearLayout radiantHeroes = (LinearLayout)radiantRelativeLayout.findViewById(R.id.heroes_column);
+        LinearLayout direHeroes = (LinearLayout)direRelativeLayout.findViewById(R.id.heroes_column);
+        TableLayout radiantTable = (TableLayout)radiantRelativeLayout.findViewById(R.id.details_table);
+        TableLayout direTable = (TableLayout)direRelativeLayout.findViewById(R.id.details_table);
+        TextView winnerTextView = (TextView)view.findViewById(R.id.winner_text);
+
+        mMatchInfoCursor.moveToFirst();
+        if (mMatchInfoCursor.getInt(mMatchInfoCursor
+                .getColumnIndexOrThrow(DatabaseContract.MatchInfo.RADIANT_WIN)) > 0) {
+            winnerTextView.setText(R.string.radiant_victory);
+            winnerTextView.setTextColor(Color.parseColor("#92A525"));
+        } else {
+            winnerTextView.setText(R.string.dire_victory);
+            winnerTextView.setTextColor(Color.parseColor("#C23C2A"));
+        }
 
         for (int i = 0; i < 5; i++) {
+            mPlayerMatchCursor.moveToPosition(i);
+            int heroId = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                    .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_ID));
+            ImageView heroIconView = (ImageView)radiantHeroes.getChildAt(i);
+            heroIconView.setImageResource(MatchDataFormatter.getHeroIconDrawable(heroId));
             radiantTable.addView(generateTableRow(i));
         }
 
         for (int i = 5; i < 10; i++) {
+            mPlayerMatchCursor.moveToPosition(i);
+            int heroId = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                    .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_ID));
+            ImageView heroIconView = (ImageView)direHeroes.getChildAt(i - 5);
+            heroIconView.setImageResource(MatchDataFormatter.getHeroIconDrawable(heroId));
             direTable.addView(generateTableRow(i));
         }
 

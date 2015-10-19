@@ -3,45 +3,81 @@
           android:layout_width="match_parent"
           android:layout_height="match_parent">
     <TextView
-        android:text="@string/hero"
-        android:padding="3dp"/>
-    <TextView
         android:text="@string/player"
-        android:padding="3dp"/>
+        android:layout_gravity="center_horizontal"
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"/>
     <TextView
         android:text="@string/level"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/table_kills"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/table_deaths"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/table_assists"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/gold"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/table_last_hits"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/table_denies"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/table_xpm"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/table_gpm"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/table_hero_damage"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/table_hero_healing"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
     <TextView
         android:text="@string/table_tower_damage"
-        android:padding="3dp"/>
+        android:padding="5dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_gravity="center_horizontal"/>
 </TableRow>
