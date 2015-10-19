@@ -8,11 +8,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.dotafriends.dotafriends.R;
 import com.dotafriends.dotafriends.database.DatabaseContract;
 import com.dotafriends.dotafriends.database.DatabaseHelper;
+import com.dotafriends.dotafriends.helpers.MatchDataFormatter;
 
 /**
  * Fragment that shows the details of a single match
@@ -23,6 +28,7 @@ public class MatchDetailFragment extends Fragment {
     public static final String MATCH_ID = "com.dotafriends.dotafriends.match_id";
 
     private static final String COMMA_SEP = ",";
+    private static final Long ANONYMOUS_ID = 4294967295L;
 
     private Cursor mMatchInfoCursor;
     private Cursor mPlayerMatchCursor;
@@ -39,6 +45,72 @@ public class MatchDetailFragment extends Fragment {
                 DatabaseContract.PlayerMatchData.MATCH_ID + " = " + matchId + " ORDER BY " +
                 DatabaseContract.PlayerMatchData.PLAYER_SLOT + " ASC";
         mPlayerMatchCursor = db.rawQuery(sql, null);
+    }
+
+    private View generateTableRow(int heroSlot) {
+        TableRow tableRow = new TableRow(getActivity());
+        View v = getActivity().getLayoutInflater().inflate(R.layout.match_detail_table_row, tableRow, false);
+        ImageView heroIconView = (ImageView)v.findViewById(R.id.table_row_hero_icon);
+        TextView playerNameView = (TextView)v.findViewById(R.id.table_row_player_name);
+        TextView levelView = (TextView)v.findViewById(R.id.table_row_level);
+        TextView killsView = (TextView)v.findViewById(R.id.table_row_kills);
+        TextView deathsView = (TextView)v.findViewById(R.id.table_row_deaths);
+        TextView assistsView = (TextView)v.findViewById(R.id.table_row_assists);
+        TextView goldView = (TextView)v.findViewById(R.id.table_row_gold);
+        TextView lastHitsView = (TextView)v.findViewById(R.id.table_row_last_hits);
+        TextView deniesView = (TextView)v.findViewById(R.id.table_row_denies);
+        TextView xpPerMinView = (TextView)v.findViewById(R.id.table_row_xp_per_min);
+        TextView goldPerMinView = (TextView)v.findViewById(R.id.table_row_gold_per_min);
+        TextView heroDamageView = (TextView)v.findViewById(R.id.table_row_hero_damage);
+        TextView heroHealingView = (TextView)v.findViewById(R.id.table_row_hero_healing);
+        TextView towerDamageView = (TextView)v.findViewById(R.id.table_row_tower_damage);
+
+        mPlayerMatchCursor.moveToPosition(heroSlot);
+        int heroId = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_ID));
+        long accountId = mPlayerMatchCursor.getLong(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.ACCOUNT_ID));
+        int level = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.LEVEL));
+        int kills = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.KILLS));
+        int deaths = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.DEATHS));
+        int assists = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.ASSISTS));
+        int gold = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.GOLD));
+        int lastHits = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.LAST_HITS));
+        int denies = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.DENIES));
+        int xpPerMin = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.XP_PER_MIN));
+        int goldPerMin = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.GOLD_PER_MIN));
+        int heroDamage = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_DAMAGE));
+        int heroHealing = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_HEALING));
+        int towerDamage = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.TOWER_DAMAGE));
+
+        heroIconView.setImageResource(MatchDataFormatter.getHeroIconDrawable(heroId));
+        playerNameView.setText(accountId == ANONYMOUS_ID ? "Anonymous" : String.valueOf(accountId));
+        levelView.setText(String.valueOf(level));
+        killsView.setText(String.valueOf(kills));
+        deathsView.setText(String.valueOf(deaths));
+        assistsView.setText(String.valueOf(assists));
+        goldView.setText(String.valueOf(gold));
+        lastHitsView.setText(String.valueOf(lastHits));
+        deniesView.setText(String.valueOf(denies));
+        xpPerMinView.setText(String.valueOf(xpPerMin));
+        goldPerMinView.setText(String.valueOf(goldPerMin));
+        heroDamageView.setText(String.valueOf(heroDamage));
+        heroHealingView.setText(String.valueOf(heroHealing));
+        towerDamageView.setText(String.valueOf(towerDamage));
+
+        return v;
     }
 
     public static MatchDetailFragment newInstance(long matchId) {
@@ -62,27 +134,21 @@ public class MatchDetailFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_match_detail, container, false);
+        View view = inflater.inflate(R.layout.fragment_match_detail, container, false);
+        TableLayout radiantTable = (TableLayout)view.findViewById(R.id.radiant_table);
+        TableLayout direTable = (TableLayout)view.findViewById(R.id.dire_table);
+        inflater.inflate(R.layout.match_detail_table_header, radiantTable, true);
+        inflater.inflate(R.layout.match_detail_table_header, direTable, true);
 
-        TextView matchIdView = (TextView) v.findViewById(R.id.match_id);
-        TextView durationView = (TextView) v.findViewById(R.id.duration);
-        TextView player1AccView = (TextView) v.findViewById(R.id.player_1_accountid);
-        TextView player2GoldView = (TextView) v.findViewById(R.id.player_2_gold);
+        for (int i = 0; i < 5; i++) {
+            radiantTable.addView(generateTableRow(i));
+        }
 
-        mMatchInfoCursor.moveToFirst();
-        long matchId = mMatchInfoCursor.getLong(mMatchInfoCursor.getColumnIndexOrThrow(DatabaseContract.MatchInfo._ID));
-        int duration = mMatchInfoCursor.getInt(mMatchInfoCursor.getColumnIndexOrThrow(DatabaseContract.MatchInfo.DURATION));
-        mPlayerMatchCursor.moveToPosition(0);
-        long player1Acc = mPlayerMatchCursor.getLong(mPlayerMatchCursor.getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.ACCOUNT_ID));
-        mPlayerMatchCursor.moveToPosition(1);
-        int player2Gold = mPlayerMatchCursor.getInt(mPlayerMatchCursor.getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.GOLD_PER_MIN));
+        for (int i = 5; i < 10; i++) {
+            direTable.addView(generateTableRow(i));
+        }
 
-        matchIdView.setText(String.valueOf(matchId));
-        durationView.setText(String.valueOf(duration));
-        player1AccView.setText(String.valueOf(player1Acc));
-        player2GoldView.setText(String.valueOf(player2Gold));
-
-        return v;
+        return view;
     }
 
     @Override

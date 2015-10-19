@@ -16,4 +16,21 @@
     <string name="error_duplicate_match">Match already in database</string>
     <string name="fetch_match_confirmation">Fetching match</string>
     <string name="list_item_hero_icon_description">Hero icon</string>
+    
+    <string name="hero">Hero</string>
+    <string name="player">Player</string>
+    <string name="level">Level</string>
+    <string name="table_kills">K</string>
+    <string name="table_deaths">D</string>
+    <string name="table_assists">A</string>
+    <string name="gold">Gold</string>
+    <string name="table_last_hits">LH</string>
+    <string name="table_denies">DN</string>
+    <string name="table_xpm">XPM</string>
+    <string name="table_gpm">GPM</string>
+    <string name="table_hero_damage">HD</string>
+    <string name="table_hero_healing">HH</string>
+    <string name="table_tower_damage">TD</string>
+    <string name="radiant">Radiant</string>
+    <string name="dire">Dire</string>
 </resources>
