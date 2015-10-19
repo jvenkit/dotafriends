@@ -59,42 +59,6 @@ public class MatchListFragment extends ListFragment
 
     public MatchListFragment() {}
 
-    private void rebuildListQuery() {
-        mListQuery = "SELECT " + DatabaseContract.MatchInfo.TABLE_NAME + "." +
-                DatabaseContract.MatchInfo._ID + COMMA_SEP +
-                DatabaseContract.MatchInfo.DURATION + COMMA_SEP +
-                DatabaseContract.MatchInfo.RADIANT_WIN + COMMA_SEP +
-                DatabaseContract.MatchInfo.GAME_MODE + COMMA_SEP +
-                DatabaseContract.MatchInfo.START_TIME + COMMA_SEP +
-                DatabaseContract.PlayerMatchData.PLAYER_SLOT + COMMA_SEP +
-                DatabaseContract.PlayerMatchData.HERO_ID + COMMA_SEP +
-                DatabaseContract.PlayerMatchData.KILLS + COMMA_SEP +
-                DatabaseContract.PlayerMatchData.DEATHS + COMMA_SEP +
-                DatabaseContract.PlayerMatchData.ASSISTS + " FROM " +
-                DatabaseContract.MatchInfo.TABLE_NAME + " INNER JOIN " +
-                DatabaseContract.PlayerMatchData.TABLE_NAME + " ON " +
-                DatabaseContract.MatchInfo._ID + "=" +
-                DatabaseContract.PlayerMatchData.MATCH_ID + " WHERE " +
-                DatabaseContract.PlayerMatchData.ACCOUNT_ID + "=" +
-                getActivity().getSharedPreferences(MainActivity.SETTINGS, 0)
-                        .getLong(MainActivity.PLAYER_ID, 0)
-                + " ORDER BY " + DatabaseContract.MatchInfo._ID + " DESC";
-    }
-
-    private void updateListView() {
-        mListObservable
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(cursor -> {
-                if (mAdapter == null) {
-                    mAdapter = new MatchListAdapter(getActivity(), cursor, 0);
-                    setListAdapter(mAdapter);
-                } else {
-                    mAdapter.changeCursor(cursor);
-                }
-            });
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -191,6 +155,42 @@ public class MatchListFragment extends ListFragment
                     @Override
                     public void onNext(Void aVoid) {
 
+                    }
+                });
+    }
+
+    private void rebuildListQuery() {
+        mListQuery = "SELECT " + DatabaseContract.MatchInfo.TABLE_NAME + "." +
+                DatabaseContract.MatchInfo._ID + COMMA_SEP +
+                DatabaseContract.MatchInfo.DURATION + COMMA_SEP +
+                DatabaseContract.MatchInfo.RADIANT_WIN + COMMA_SEP +
+                DatabaseContract.MatchInfo.GAME_MODE + COMMA_SEP +
+                DatabaseContract.MatchInfo.START_TIME + COMMA_SEP +
+                DatabaseContract.PlayerMatchData.PLAYER_SLOT + COMMA_SEP +
+                DatabaseContract.PlayerMatchData.HERO_ID + COMMA_SEP +
+                DatabaseContract.PlayerMatchData.KILLS + COMMA_SEP +
+                DatabaseContract.PlayerMatchData.DEATHS + COMMA_SEP +
+                DatabaseContract.PlayerMatchData.ASSISTS + " FROM " +
+                DatabaseContract.MatchInfo.TABLE_NAME + " INNER JOIN " +
+                DatabaseContract.PlayerMatchData.TABLE_NAME + " ON " +
+                DatabaseContract.MatchInfo._ID + "=" +
+                DatabaseContract.PlayerMatchData.MATCH_ID + " WHERE " +
+                DatabaseContract.PlayerMatchData.ACCOUNT_ID + "=" +
+                getActivity().getSharedPreferences(MainActivity.SETTINGS, 0)
+                        .getLong(MainActivity.PLAYER_ID, 0)
+                + " ORDER BY " + DatabaseContract.MatchInfo._ID + " DESC";
+    }
+
+    private void updateListView() {
+        mListObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(cursor -> {
+                    if (mAdapter == null) {
+                        mAdapter = new MatchListAdapter(getActivity(), cursor, 0);
+                        setListAdapter(mAdapter);
+                    } else {
+                        mAdapter.changeCursor(cursor);
                     }
                 });
     }

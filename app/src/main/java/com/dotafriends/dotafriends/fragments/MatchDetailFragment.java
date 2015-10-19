@@ -36,6 +36,75 @@ public class MatchDetailFragment extends Fragment {
     private Cursor mPlayerMatchCursor;
     private DatabaseHelper mDatabaseHelper;
 
+    public static MatchDetailFragment newInstance(long matchId) {
+        Log.d(TAG, "Create new detail fragment");
+
+        Bundle args = new Bundle();
+        args.putLong(MATCH_ID, matchId);
+
+        MatchDetailFragment fragment = new MatchDetailFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (mDatabaseHelper == null)
+            mDatabaseHelper = DatabaseHelper.getInstance(getActivity());
+        getCursors(getArguments().getLong(MATCH_ID));
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_match_detail, container, false);
+        RelativeLayout radiantRelativeLayout = (RelativeLayout)view.findViewById(R.id.radiant_table);
+        RelativeLayout direRelativeLayout = (RelativeLayout)view.findViewById(R.id.dire_table);
+        LinearLayout radiantHeroes = (LinearLayout)radiantRelativeLayout.findViewById(R.id.heroes_column);
+        LinearLayout direHeroes = (LinearLayout)direRelativeLayout.findViewById(R.id.heroes_column);
+        TableLayout radiantTable = (TableLayout)radiantRelativeLayout.findViewById(R.id.details_table);
+        TableLayout direTable = (TableLayout)direRelativeLayout.findViewById(R.id.details_table);
+        TextView winnerTextView = (TextView)view.findViewById(R.id.winner_text);
+
+        mMatchInfoCursor.moveToFirst();
+        if (mMatchInfoCursor.getInt(mMatchInfoCursor
+                .getColumnIndexOrThrow(DatabaseContract.MatchInfo.RADIANT_WIN)) > 0) {
+            winnerTextView.setText(R.string.radiant_victory);
+            winnerTextView.setTextColor(Color.parseColor("#92A525"));
+        } else {
+            winnerTextView.setText(R.string.dire_victory);
+            winnerTextView.setTextColor(Color.parseColor("#C23C2A"));
+        }
+
+        for (int i = 0; i < 5; i++) {
+            mPlayerMatchCursor.moveToPosition(i);
+            int heroId = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                    .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_ID));
+            ImageView heroIconView = (ImageView)radiantHeroes.getChildAt(i);
+            heroIconView.setImageResource(MatchDataFormatter.getHeroIconDrawable(heroId));
+            radiantTable.addView(generateTableRow(i));
+        }
+
+        for (int i = 5; i < 10; i++) {
+            mPlayerMatchCursor.moveToPosition(i);
+            int heroId = mPlayerMatchCursor.getInt(mPlayerMatchCursor
+                    .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_ID));
+            ImageView heroIconView = (ImageView)direHeroes.getChildAt(i - 5);
+            heroIconView.setImageResource(MatchDataFormatter.getHeroIconDrawable(heroId));
+            direTable.addView(generateTableRow(i));
+        }
+
+        return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        mMatchInfoCursor.close();
+        mPlayerMatchCursor.close();
+        mDatabaseHelper.close();
+        super.onDestroy();
+    }
+
     private void getCursors(long matchId) {
         SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
 
@@ -113,74 +182,5 @@ public class MatchDetailFragment extends Fragment {
         towerDamageView.setText(String.valueOf(towerDamage));
 
         return v;
-    }
-
-    public static MatchDetailFragment newInstance(long matchId) {
-        Log.d(TAG, "Create new detail fragment");
-
-        Bundle args = new Bundle();
-        args.putLong(MATCH_ID, matchId);
-
-        MatchDetailFragment fragment = new MatchDetailFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (mDatabaseHelper == null)
-            mDatabaseHelper = DatabaseHelper.getInstance(getActivity());
-        getCursors(getArguments().getLong(MATCH_ID));
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_match_detail, container, false);
-        RelativeLayout radiantRelativeLayout = (RelativeLayout)view.findViewById(R.id.radiant_table);
-        RelativeLayout direRelativeLayout = (RelativeLayout)view.findViewById(R.id.dire_table);
-        LinearLayout radiantHeroes = (LinearLayout)radiantRelativeLayout.findViewById(R.id.heroes_column);
-        LinearLayout direHeroes = (LinearLayout)direRelativeLayout.findViewById(R.id.heroes_column);
-        TableLayout radiantTable = (TableLayout)radiantRelativeLayout.findViewById(R.id.details_table);
-        TableLayout direTable = (TableLayout)direRelativeLayout.findViewById(R.id.details_table);
-        TextView winnerTextView = (TextView)view.findViewById(R.id.winner_text);
-
-        mMatchInfoCursor.moveToFirst();
-        if (mMatchInfoCursor.getInt(mMatchInfoCursor
-                .getColumnIndexOrThrow(DatabaseContract.MatchInfo.RADIANT_WIN)) > 0) {
-            winnerTextView.setText(R.string.radiant_victory);
-            winnerTextView.setTextColor(Color.parseColor("#92A525"));
-        } else {
-            winnerTextView.setText(R.string.dire_victory);
-            winnerTextView.setTextColor(Color.parseColor("#C23C2A"));
-        }
-
-        for (int i = 0; i < 5; i++) {
-            mPlayerMatchCursor.moveToPosition(i);
-            int heroId = mPlayerMatchCursor.getInt(mPlayerMatchCursor
-                    .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_ID));
-            ImageView heroIconView = (ImageView)radiantHeroes.getChildAt(i);
-            heroIconView.setImageResource(MatchDataFormatter.getHeroIconDrawable(heroId));
-            radiantTable.addView(generateTableRow(i));
-        }
-
-        for (int i = 5; i < 10; i++) {
-            mPlayerMatchCursor.moveToPosition(i);
-            int heroId = mPlayerMatchCursor.getInt(mPlayerMatchCursor
-                    .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.HERO_ID));
-            ImageView heroIconView = (ImageView)direHeroes.getChildAt(i - 5);
-            heroIconView.setImageResource(MatchDataFormatter.getHeroIconDrawable(heroId));
-            direTable.addView(generateTableRow(i));
-        }
-
-        return view;
-    }
-
-    @Override
-    public void onDestroy() {
-        mMatchInfoCursor.close();
-        mPlayerMatchCursor.close();
-        mDatabaseHelper.close();
-        super.onDestroy();
     }
 }

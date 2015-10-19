@@ -65,24 +65,29 @@ public class SteamService {
         public T result;
     }
 
-    private <T extends WebApiResult> Observable.Transformer<DataEnvelope<T>, T> filterWebErrors() {
-        return dataEnvelopeObservable ->
-                dataEnvelopeObservable
-                .flatMap(requestData -> {
-                    if (requestData.result == null) {
-                        return Observable.error(new SteamServiceException("Steam Web API is not responding, try again later"));
-                    } else if (requestData.result.getError() != null) {
-                        return Observable.error(new SteamServiceException(requestData.result.getError()));
-                    } else if (requestData.result.getStatusDetail() != null) {
-                        return Observable.error(new SteamServiceException(requestData.result.getStatusDetail()));
-                    } else {
-                        return Observable.just(requestData.result);
-                    }
+    public class SteamServiceException extends Exception {
+        SteamServiceException(String detailMessage) { super(detailMessage); }
+    }
+
+    public Observable<List<Long>> fetchMatchIds(long accountId, long latestMatchId) {
+        return fetchAllMatchIds(accountId)
+                .flatMap(matchIds -> {
+                    int index = matchIds.indexOf(latestMatchId);
+                    if (index >= 0)
+                        matchIds.subList(matchIds.indexOf(latestMatchId), matchIds.size()).clear();
+                    return Observable.just(matchIds);
                 });
     }
 
-    public class SteamServiceException extends Exception {
-        SteamServiceException(String detailMessage) { super(detailMessage); }
+    public Observable.Transformer<List<Long>, SingleMatchInfo> fetchMatches() {
+        return matchIdsObservable ->
+            matchIdsObservable
+                    .flatMap(matchIds -> Observable.interval(2000, 2000, TimeUnit.MILLISECONDS)
+                            .take(matchIds.size())
+                            .flatMap(tick -> fetchMatchDetails(
+                                            matchIds.get(matchIds.size() - 1 - tick.intValue()))
+                            )
+                    );
     }
 
     private Observable<SingleMatchInfo> fetchMatchDetails(long matchId) {
@@ -132,25 +137,19 @@ public class SteamService {
                 .last();
     }
 
-    public Observable<List<Long>> fetchMatchIds(long accountId, long latestMatchId) {
-        return fetchAllMatchIds(accountId)
-                .flatMap(matchIds -> {
-                    int index = matchIds.indexOf(latestMatchId);
-                    if (index >= 0)
-                        matchIds.subList(matchIds.indexOf(latestMatchId), matchIds.size()).clear();
-                    return Observable.just(matchIds);
-                });
+    private <T extends WebApiResult> Observable.Transformer<DataEnvelope<T>, T> filterWebErrors() {
+        return dataEnvelopeObservable ->
+                dataEnvelopeObservable
+                        .flatMap(requestData -> {
+                            if (requestData.result == null) {
+                                return Observable.error(new SteamServiceException("Steam Web API is not responding, try again later"));
+                            } else if (requestData.result.getError() != null) {
+                                return Observable.error(new SteamServiceException(requestData.result.getError()));
+                            } else if (requestData.result.getStatusDetail() != null) {
+                                return Observable.error(new SteamServiceException(requestData.result.getStatusDetail()));
+                            } else {
+                                return Observable.just(requestData.result);
+                            }
+                        });
     }
-
-    public Observable.Transformer<List<Long>, SingleMatchInfo> fetchMatches() {
-        return matchIdsObservable ->
-            matchIdsObservable
-                    .flatMap(matchIds -> Observable.interval(2000, 2000, TimeUnit.MILLISECONDS)
-                            .take(matchIds.size())
-                            .flatMap(tick -> fetchMatchDetails(
-                                            matchIds.get(matchIds.size() - 1 - tick.intValue()))
-                            )
-                    );
-    }
-
 }
