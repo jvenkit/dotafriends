@@ -1,11 +1,9 @@
 package com.dotafriends.dotafriends.models;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class SingleMatchInfo extends WebApiResult{
+public class SingleMatchInfo extends DotaApiResult {
 
     private List<PlayerMatchData> players = new ArrayList<>();
     private boolean radiantWin;

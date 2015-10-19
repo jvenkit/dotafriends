@@ -33,6 +33,6 @@
     <string name="table_tower_damage">TD</string>
     <string name="radiant">Radiant</string>
     <string name="dire">Dire</string>
-    <string name="radiant_victory">Radiant Victory</string>
-    <string name="dire_victory">Dire Victory</string>
+    <string name="radiant_victory">RADIANT VICTORY</string>
+    <string name="dire_victory">DIRE VICTORY</string>
 </resources>

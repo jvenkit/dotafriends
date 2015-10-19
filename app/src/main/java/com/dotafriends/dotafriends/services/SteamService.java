@@ -2,8 +2,9 @@ package com.dotafriends.dotafriends.services;
 
 import com.dotafriends.dotafriends.models.MatchHistory;
 import com.dotafriends.dotafriends.models.MatchHistoryMatch;
+import com.dotafriends.dotafriends.models.PlayerSummaries;
 import com.dotafriends.dotafriends.models.SingleMatchInfo;
-import com.dotafriends.dotafriends.models.WebApiResult;
+import com.dotafriends.dotafriends.models.DotaApiResult;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -47,22 +48,32 @@ public class SteamService {
 
     private interface DotaMatchService {
         @GET("/IDOTA2Match_570/GetMatchDetails/v001/")
-        Observable<DataEnvelope<SingleMatchInfo>> fetchMatchDetails(
+        Observable<DotaEnvelop<SingleMatchInfo>> fetchMatchDetails(
                 @Query("key") String key,
                 @Query("match_id") long matchId
         );
 
         @GET("/IDOTA2Match_570/GetMatchHistory/v001/")
-        Observable<DataEnvelope<MatchHistory>> fetchMatchHistory(
+        Observable<DotaEnvelop<MatchHistory>> fetchMatchHistory(
                 @Query("key") String key,
                 @Query("account_id") long accountId,
                 @Query("start_at_match_id") long startAtMatchId,
                 @Query("matches_requested") int matchesRequested
         );
+
+        @GET("/ISteamUser/GetPlayerSummaries/v0002/")
+        Observable<SteamEnvelope<PlayerSummaries>> fetchPlayerSummaries(
+                @Query("key") String key,
+                @Query("steamids") String steamIds
+        );
     }
 
-    private class DataEnvelope<T extends WebApiResult> {
-        public T result;
+    private class DotaEnvelop<T extends DotaApiResult> {
+        private T result;
+    }
+
+    private class SteamEnvelope<T> {
+        private T response;
     }
 
     public class SteamServiceException extends Exception {
@@ -137,7 +148,7 @@ public class SteamService {
                 .last();
     }
 
-    private <T extends WebApiResult> Observable.Transformer<DataEnvelope<T>, T> filterWebErrors() {
+    private <T extends DotaApiResult> Observable.Transformer<DotaEnvelop<T>, T> filterWebErrors() {
         return dataEnvelopeObservable ->
                 dataEnvelopeObservable
                         .flatMap(requestData -> {

@@ -3,7 +3,7 @@ package com.dotafriends.dotafriends.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MatchHistory extends WebApiResult {
+public class MatchHistory extends DotaApiResult {
     private int numResults;
     private int totalResults;
     private int resultsRemaining;
