@@ -24,7 +24,7 @@
             android:textSize="18sp"
             android:text="@string/radiant"/>
         <include android:id="@+id/radiant_table"
-                 layout="@layout/player_match_details_table" />
+                 layout="@layout/match_detail_player_table" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,6 +34,6 @@
             android:textSize="18sp"
             android:text="@string/dire"/>
         <include android:id="@+id/dire_table"
-                 layout="@layout/player_match_details_table" />
+                 layout="@layout/match_detail_player_table" />
     </LinearLayout>
 </ScrollView>
