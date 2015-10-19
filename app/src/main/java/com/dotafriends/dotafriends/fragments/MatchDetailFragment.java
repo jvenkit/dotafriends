@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -21,7 +20,6 @@ import com.dotafriends.dotafriends.R;
 import com.dotafriends.dotafriends.database.DatabaseContract;
 import com.dotafriends.dotafriends.database.DatabaseHelper;
 import com.dotafriends.dotafriends.helpers.MatchDataFormatter;
-import com.dotafriends.dotafriends.models.MatchHistory;
 
 /**
  * Fragment that shows the details of a single match
