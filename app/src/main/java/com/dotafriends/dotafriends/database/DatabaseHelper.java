@@ -7,9 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.dotafriends.dotafriends.activities.MainActivity;
-import com.dotafriends.dotafriends.helpers.MatchDataFormatter;
+import com.dotafriends.dotafriends.helpers.DataFormatter;
 import com.dotafriends.dotafriends.models.AbilityUpgrade;
 import com.dotafriends.dotafriends.models.PlayerMatchData;
+import com.dotafriends.dotafriends.models.PlayerSummary;
 import com.dotafriends.dotafriends.models.SingleMatchInfo;
 
 import rx.Observable;
@@ -24,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static DatabaseHelper sInstance = null;
 
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
     private static final String DATABASE_NAME = "DotaFriendsDatabase.db";
 
     private static final long ANONYMOUS_ID = 4294967295L;
@@ -63,6 +64,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_PLAYERS_TABLE =
             "CREATE TABLE " + DatabaseContract.Players.TABLE_NAME + " (" +
                     DatabaseContract.Players.ACCOUNT_ID + INTEGER_TYPE + " UNIQUE" + COMMA_SEP +
+                    DatabaseContract.Players.DISPLAY_NAME + " TEXT" + COMMA_SEP +
                     DatabaseContract.Players.WINS_WITH + ZERO_INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.Players.LOSSES_WITH + ZERO_INTEGER_TYPE + COMMA_SEP +
                     DatabaseContract.Players.WINS_AGAINST + ZERO_INTEGER_TYPE + COMMA_SEP +
@@ -241,7 +243,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                         if ((userSlot < 5 && player.getPlayerSlot() < 5) ||
                                 (userSlot > 5 && player.getPlayerSlot() > 5)) {
-                            if (MatchDataFormatter.isWin(userSlot, match.isRadiantWin() ? 1 : 0)) {
+                            if (DataFormatter.isWin(userSlot, match.isRadiantWin() ? 1 : 0)) {
                                 db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
                                         " SET " + DatabaseContract.Players.WINS_WITH + " = " +
                                         DatabaseContract.Players.WINS_WITH + " + 1 WHERE " +
@@ -258,7 +260,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 );
                             }
                         } else {
-                            if (MatchDataFormatter.isWin(userSlot, match.isRadiantWin() ? 1 : 0)) {
+                            if (DataFormatter.isWin(userSlot, match.isRadiantWin() ? 1 : 0)) {
                                 db.execSQL("UPDATE " + DatabaseContract.Players.TABLE_NAME +
                                                 " SET " + DatabaseContract.Players.WINS_AGAINST +
                                                 " = " + DatabaseContract.Players.WINS_AGAINST +
@@ -280,6 +282,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 }
                 db.setTransactionSuccessful();
                 observer.onNext(match);
+            } catch (SQLException e) {
+                observer.onError(e);
+            } finally {
+                db.endTransaction();
+                observer.onCompleted();
+            }
+        });
+    }
+
+    public Observable<Void> insertPlayerSummary(PlayerSummary playerSummary) {
+        return Observable.create(observer -> {
+            SQLiteDatabase db = getWritableDatabase();
+            db.beginTransaction();
+            try {
+                db.execSQL("INSERT OR IGNORE INTO " + DatabaseContract.Players.TABLE_NAME +
+                                " (" + DatabaseContract.Players.ACCOUNT_ID + ") VALUES (" +
+                                DataFormatter.getAccountId(playerSummary.getSteamId()) + ")"
+                );
+
+                String whereClause = DatabaseContract.Players.ACCOUNT_ID + " = " +
+                        DataFormatter.getAccountId(playerSummary.getSteamId());
+                ContentValues values = new ContentValues();
+                values.put(DatabaseContract.Players.DISPLAY_NAME, playerSummary.getPersonaName());
+                db.update(DatabaseContract.Players.TABLE_NAME, values, whereClause, null);
+
+                db.setTransactionSuccessful();
+                observer.onNext(null);
             } catch (SQLException e) {
                 observer.onError(e);
             } finally {

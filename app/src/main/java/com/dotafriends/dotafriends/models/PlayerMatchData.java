@@ -5,10 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerMatchData {
-    private long accountId;
-    private int playerSlot;
-    private int heroId;
+public class PlayerMatchData extends Player {
     @SerializedName("item_0")
     private int item0;
     @SerializedName("item_1")
@@ -36,18 +33,6 @@ public class PlayerMatchData {
     private int heroHealing;
     private int level;
     private List<AbilityUpgrade> abilityUpgrades = new ArrayList<>();
-
-    public long getAccountId() {
-        return accountId;
-    }
-
-    public int getPlayerSlot() {
-        return playerSlot;
-    }
-
-    public int getHeroId() {
-        return heroId;
-    }
 
     public int getItem0() {
         return item0;

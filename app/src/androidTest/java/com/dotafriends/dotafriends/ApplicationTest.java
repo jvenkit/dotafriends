@@ -4,6 +4,8 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.util.Log;
 
+import com.dotafriends.dotafriends.helpers.DataFormatter;
+import com.dotafriends.dotafriends.models.PlayerSummary;
 import com.dotafriends.dotafriends.services.SteamService;
 
 import rx.schedulers.Schedulers;
@@ -13,7 +15,7 @@ import rx.schedulers.Schedulers;
  */
 public class ApplicationTest extends ApplicationTestCase<Application> {
 
-    private static final String TAG = "AppTest";
+    private static final String TAG = "dotatest";
 
     private SteamService mSteamService;
 
@@ -27,32 +29,34 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         mSteamService = new SteamService();
     }
 
-    public void testPreconditions() {
-        assertNotNull("mSteamService is null", mSteamService);
+    public void testSteamIdConversion() {
+        long number = 76561198012435235L;
+        String expected = String.valueOf(number);
+        String actual = DataFormatter.get64BitSteamId(52169507);
+        assertEquals(expected, actual);
+
+        number = 76561197987050973L;
+        expected = String.valueOf(number);
+        actual = DataFormatter.get64BitSteamId(26785245);
+        assertEquals(expected, actual);
+
+        long expected2 = 52169507L;
+        long actual2 = DataFormatter.getAccountId("76561198012435235");
+        assertEquals(expected2, actual2);
+
+        expected2 = 26785245L;
+        actual2 = DataFormatter.getAccountId("76561197987050973");
+        assertEquals(expected2, actual2);
     }
 
-    public void testMatchHistoryId() throws InterruptedException {
-        Log.d(TAG, "Beginning test");
-        mSteamService.fetchMatchIds(52169507, 975640642)
+    public void testPlayerSummaries() throws InterruptedException {
+        mSteamService.fetchPlayerSummaries(52169507L)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
-                .subscribe(result -> {
-                    Log.d(TAG, "Found " + (result.get(result.size() - 1)) + " matches");
-                    Log.d(TAG, "First match ID: " + result.get(0));
-                    Log.d(TAG, "Last match ID: " + result.get(result.size() - 2));
+                .subscribe(playerSummary -> {
+                    Log.d(TAG, "Got player name: " + playerSummary.getPersonaName());
                 });
-        Thread.sleep(30000);
+
+        Thread.sleep(60000);
     }
-
-    /*public void testRecentMatches() throws InterruptedException {
-        Log.d(TAG, "Beginning recent matches test");
-        mSteamService.fetchRecentMatches(52169507, 5)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.computation())
-                .subscribe(result -> {
-                    Log.d(TAG, "Found a match: " + result.matchId);
-                });
-        Thread.sleep(15000);
-    }*/
-
 }

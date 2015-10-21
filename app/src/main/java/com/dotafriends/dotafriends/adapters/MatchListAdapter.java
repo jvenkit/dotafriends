@@ -7,12 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CursorAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dotafriends.dotafriends.R;
 import com.dotafriends.dotafriends.database.DatabaseContract;
-import com.dotafriends.dotafriends.helpers.MatchDataFormatter;
+import com.dotafriends.dotafriends.helpers.DataFormatter;
 
 /**
  * Binds data from cursor to ListView in MatchListFragment
@@ -35,7 +36,7 @@ public class MatchListAdapter extends CursorAdapter {
         TextView duration;
         TextView kda;
         ImageView heroIcon;
-        CheckBox win;
+        View win;
     }
 
     public View newView(Context context, Cursor c, ViewGroup parent) {
@@ -49,7 +50,7 @@ public class MatchListAdapter extends CursorAdapter {
         holder.duration = (TextView)v.findViewById(R.id.list_item_duration);
         holder.kda = (TextView)v.findViewById(R.id.list_item_kda);
         holder.heroIcon = (ImageView)v.findViewById(R.id.list_item_hero_icon);
-        holder.win = (CheckBox)v.findViewById(R.id.list_item_checkbox);
+        holder.win = v.findViewById(R.id.list_item_win_loss);
         v.setTag(holder);
         return v;
     }
@@ -69,12 +70,17 @@ public class MatchListAdapter extends CursorAdapter {
 
         ViewHolder holder = (ViewHolder) v.getTag();
         holder.matchId.setText(String.valueOf(matchId));
-        holder.startTime.setText(MatchDataFormatter.formatStartTime(startTime));
-        holder.gameMode.setText(MatchDataFormatter.getGameMode(gameMode));
-        holder.duration.setText(MatchDataFormatter.formatDuration(duration));
-        holder.win.setChecked(MatchDataFormatter.isWin(playerSlot, radiantWin));
-        holder.kda.setText(MatchDataFormatter.formatKda(kills, deaths, assists));
-        holder.heroIcon.setImageResource(MatchDataFormatter.getHeroIconDrawable(heroId));
+        holder.startTime.setText(DataFormatter.formatStartTime(startTime));
+        holder.gameMode.setText(DataFormatter.getGameMode(gameMode));
+        holder.duration.setText(DataFormatter.formatDuration(duration));
+        //holder.win.setChecked(DataFormatter.isWin(playerSlot, radiantWin));
+        if (DataFormatter.isWin(playerSlot, radiantWin)) {
+            holder.win.setBackgroundColor(0xFF00FF00);
+        } else {
+            holder.win.setBackgroundColor(0xFFFF0000);
+        }
+        holder.kda.setText(DataFormatter.formatKda(kills, deaths, assists));
+        holder.heroIcon.setImageResource(DataFormatter.getHeroIconDrawable(heroId));
     }
 
 }

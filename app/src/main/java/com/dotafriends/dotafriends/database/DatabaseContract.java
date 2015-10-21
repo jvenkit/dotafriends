@@ -37,6 +37,7 @@ public class DatabaseContract {
     public static abstract class Players implements BaseColumns {
         public static final String TABLE_NAME = "players";
         public static final String ACCOUNT_ID = "accountid";
+        public static final String DISPLAY_NAME = "displayname";
         public static final String WINS_WITH = "winswith";
         public static final String LOSSES_WITH = "losseswith";
         public static final String WINS_AGAINST = "winsagainst";

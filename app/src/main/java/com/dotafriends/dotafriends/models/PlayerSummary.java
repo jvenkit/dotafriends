@@ -3,6 +3,8 @@ package com.dotafriends.dotafriends.models;
 import com.google.gson.annotations.SerializedName;
 
 public class PlayerSummary {
+    @SerializedName("steamid")
+    private String steamId;
     @SerializedName("personaname")
     private String personaName;
     @SerializedName("profileurl")
@@ -15,11 +17,15 @@ public class PlayerSummary {
     @SerializedName("timecreated")
     private int timeCreated;
 
-    public String getPersonaname() {
+    public String getSteamId() {
+        return steamId;
+    }
+
+    public String getPersonaName() {
         return personaName;
     }
 
-    public String getProfileurl() {
+    public String getProfileUrl() {
         return profileUrl;
     }
 

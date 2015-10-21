@@ -14,7 +14,7 @@ import java.util.HashMap;
  * Provides methods for converting values retrieved from the database to user facing objects such as
  * Strings or resource IDs.
  */
-public class MatchDataFormatter {
+public class DataFormatter {
 
     private static final HashMap<Integer, String> GAME_MODES = new HashMap<>();
     private static final HashMap<Integer, Integer> HERO_ICONS = new HashMap<>();
@@ -214,5 +214,14 @@ public class MatchDataFormatter {
         String kda = new Formatter().format("<font color=#00FF00>%d</font> / <font color=#FF0000>%d</font> / <font color=#0000FF>%d</font>",
                 kills, deaths, assists).toString();
         return Html.fromHtml(kda);
+    }
+
+    public static String get64BitSteamId(long accountId) {
+        String binary = "00000001" + "0001" + "00000000000000000001" + Long.toBinaryString(accountId | 0x100000000L).substring(1);
+        return String.valueOf(Long.parseLong(binary, 2));
+    }
+
+    public static Long getAccountId(String steamId) {
+        return Long.parseLong(steamId) & 0xFFFFFFFFL;
     }
 }

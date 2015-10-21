@@ -4,8 +4,11 @@
           android:layout_height="match_parent" >
     <TextView
         android:id="@+id/table_row_player_name"
+        android:layout_width="120dp"
         android:padding="5dp"
         android:textSize="16sp"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:layout_gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_level"

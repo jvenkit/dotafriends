@@ -81,7 +81,10 @@ public class MatchService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         long latestMatchId = intent.getLongExtra(LATEST_MATCH_EXTRA, 0);
-        mWebService.fetchMatchIds(mPlayerId, latestMatchId)
+        mWebService.fetchPlayerSummaries(mPlayerId)
+                .flatMap(mDbHelper::insertPlayerSummary)
+                .last()
+                .flatMap(insertFinished -> mWebService.fetchMatchIds(mPlayerId, latestMatchId))
                 .flatMap(matchIds -> {
                     mProgressMax = matchIds.size();
                     return Observable.just(matchIds);

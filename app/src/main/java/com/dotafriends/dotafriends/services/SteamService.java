@@ -1,8 +1,13 @@
 package com.dotafriends.dotafriends.services;
 
+import android.util.Log;
+
+import com.dotafriends.dotafriends.helpers.DataFormatter;
 import com.dotafriends.dotafriends.models.MatchHistory;
 import com.dotafriends.dotafriends.models.MatchHistoryMatch;
+import com.dotafriends.dotafriends.models.Player;
 import com.dotafriends.dotafriends.models.PlayerSummaries;
+import com.dotafriends.dotafriends.models.PlayerSummary;
 import com.dotafriends.dotafriends.models.SingleMatchInfo;
 import com.dotafriends.dotafriends.models.DotaApiResult;
 import com.google.gson.FieldNamingPolicy;
@@ -19,18 +24,19 @@ import retrofit.RxJavaCallAdapterFactory;
 import retrofit.http.GET;
 import retrofit.http.Query;
 import rx.Observable;
+import rx.functions.Func0;
 
 /**
  * Class responsible for making API requests using Retrofit. Methods return Observables that emit
  * the relevant data.
  */
 public class SteamService {
-    private static final String TAG = "SteamService";
+    private static final String TAG = "dotaservice";
 
     private static final String API_KEY = "4E558323C263A62086A224D9A0E3A9A1";
     private static final String WEB_SERVICE_BASE_URL = "https://api.steampowered.com";
 
-    private final DotaMatchService mWebService;
+    private final SteamWebService mWebService;
 
     public SteamService() {
         Gson gson = new GsonBuilder()
@@ -43,18 +49,18 @@ public class SteamService {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
 
-        mWebService = retrofit.create(DotaMatchService.class);
+        mWebService = retrofit.create(SteamWebService.class);
     }
 
-    private interface DotaMatchService {
+    private interface SteamWebService {
         @GET("/IDOTA2Match_570/GetMatchDetails/v001/")
-        Observable<DotaEnvelop<SingleMatchInfo>> fetchMatchDetails(
+        Observable<DotaEnvelope<SingleMatchInfo>> fetchMatchDetails(
                 @Query("key") String key,
                 @Query("match_id") long matchId
         );
 
         @GET("/IDOTA2Match_570/GetMatchHistory/v001/")
-        Observable<DotaEnvelop<MatchHistory>> fetchMatchHistory(
+        Observable<DotaEnvelope<MatchHistory>> fetchMatchHistory(
                 @Query("key") String key,
                 @Query("account_id") long accountId,
                 @Query("start_at_match_id") long startAtMatchId,
@@ -68,7 +74,7 @@ public class SteamService {
         );
     }
 
-    private class DotaEnvelop<T extends DotaApiResult> {
+    private class DotaEnvelope<T extends DotaApiResult> {
         private T result;
     }
 
@@ -99,6 +105,30 @@ public class SteamService {
                                             matchIds.get(matchIds.size() - 1 - tick.intValue()))
                             )
                     );
+    }
+
+    public Observable<PlayerSummary> fetchPlayerSummaries(long accountId) {
+        return fetchAccountIds(accountId)
+                .compose(this.<List<Long>>splitAccountIds())
+                .flatMap(accountIds -> {
+                    StringBuilder sb = new StringBuilder();
+                    if (!accountIds.isEmpty()) {
+                        for (int i = 0; i < accountIds.size(); i++) {
+                            sb.append(DataFormatter.get64BitSteamId(accountIds.get(i)));
+                            if (i < accountIds.size() - 1) sb.append(",");
+                        }
+                        return mWebService.fetchPlayerSummaries(API_KEY, sb.toString())
+                                .flatMap(steamEnvelope -> {
+                                    if (steamEnvelope.response != null) {
+                                        return Observable.from(steamEnvelope.response.getPlayers());
+                                    } else {
+                                        return Observable.error(new SteamServiceException("Bad call to fetchPlayerSummaries"));
+                                    }
+                                });
+                    } else {
+                        return Observable.empty();
+                    }
+                });
     }
 
     private Observable<SingleMatchInfo> fetchMatchDetails(long matchId) {
@@ -148,7 +178,61 @@ public class SteamService {
                 .last();
     }
 
-    private <T extends DotaApiResult> Observable.Transformer<DotaEnvelop<T>, T> filterWebErrors() {
+    private Observable<List<Long>> fetchAccountIds(long accountId) {
+        List<Long> players = new ArrayList<>();
+
+        return fetchMatchHistory(accountId)
+                .flatMap(result -> fetchRemainingMatchHistory(result, accountId))
+                .flatMap(matchHistory -> {
+                    if (players.size() == 0) {
+                        for (MatchHistoryMatch match : matchHistory.getMatches()) {
+                            for (Player player : match.getPlayers()) {
+                                if (!players.contains(player.getAccountId()) &&
+                                        player.getAccountId() != accountId)
+                                    players.add(player.getAccountId());
+                            }
+                        }
+                        return Observable.just(players);
+                    } else {
+                        for (int i = 1; i < matchHistory.getMatches().size(); i++) {
+                            for (Player player : matchHistory.getMatches().get(i).getPlayers()) {
+                                if (!players.contains(player.getAccountId()) &&
+                                        player.getAccountId() != accountId)
+                                    players.add(player.getAccountId());
+                            }
+                        }
+                        return Observable.just(players);
+                    }
+                })
+                .last();
+    }
+
+    private Observable.Transformer<List<Long>, List<Long>> splitAccountIds() {
+        return listObservable ->
+                listObservable.flatMap(accountIds -> {
+                    Log.d(TAG, "Found " + accountIds.size() + " IDs");
+                    if (accountIds.size() <= 100) {
+                        return Observable.just(accountIds);
+                    } else {
+                        int split = accountIds.size() / 100;
+                        return Observable.interval(2000, TimeUnit.MILLISECONDS)
+                                .take(split + 1)
+                                .flatMap(tick -> {
+                                    if (tick != split) {
+                                        return Observable.just(accountIds.subList(
+                                                tick.intValue() * 100, tick.intValue() * 100 + 100)
+                                        );
+                                    } else {
+                                        return Observable.just(accountIds.subList(
+                                                tick.intValue() * 100, accountIds.size())
+                                        );
+                                    }
+                                });
+                    }
+                });
+    }
+
+    private <T extends DotaApiResult> Observable.Transformer<DotaEnvelope<T>, T> filterWebErrors() {
         return dataEnvelopeObservable ->
                 dataEnvelopeObservable
                         .flatMap(requestData -> {

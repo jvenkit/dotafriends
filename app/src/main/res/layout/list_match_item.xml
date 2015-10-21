@@ -12,6 +12,7 @@
         android:layout_height="50dp"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp" />
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -36,6 +37,7 @@
             android:textSize="12sp"
             android:textStyle="italic" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -56,13 +58,20 @@
             android:textStyle="bold"
             android:textSize="14sp" />
     </LinearLayout>
-    <CheckBox
+
+    <View
+        android:id="@+id/list_item_win_loss"
+        android:layout_width="5dp"
+        android:layout_height="match_parent">
+    </View>
+
+    <!--<CheckBox
         android:id="@+id/list_item_checkbox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:focusable="false"
         android:enabled="false"
-        android:layout_gravity="center_vertical"/>
+        android:layout_gravity="center_vertical"/>-->
 
 </LinearLayout>
