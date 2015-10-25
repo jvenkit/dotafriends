@@ -73,7 +73,6 @@ public class MatchListAdapter extends CursorAdapter {
         holder.startTime.setText(DataFormatter.formatStartTime(startTime));
         holder.gameMode.setText(DataFormatter.getGameMode(gameMode));
         holder.duration.setText(DataFormatter.formatDuration(duration));
-        //holder.win.setChecked(DataFormatter.isWin(playerSlot, radiantWin));
         if (DataFormatter.isWin(playerSlot, radiantWin)) {
             holder.win.setBackgroundColor(0xFF00FF00);
         } else {
