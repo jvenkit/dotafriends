@@ -34,3 +34,6 @@ build/
 
 #NDK
 obj/build
+
+# Tests
+app/src/androidTest
