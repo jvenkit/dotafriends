@@ -32,7 +32,7 @@ import rx.Observable;
 public class SteamService {
     private static final String TAG = "dotaservice";
 
-    private static final String API_KEY = "4E558323C263A62086A224D9A0E3A9A1";
+    private static final String API_KEY = "Your API key goes here";
     private static final String WEB_SERVICE_BASE_URL = "https://api.steampowered.com";
 
     private final SteamWebService mWebService;
