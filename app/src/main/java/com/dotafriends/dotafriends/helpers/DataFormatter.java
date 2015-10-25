@@ -11,8 +11,7 @@ import java.util.Formatter;
 import java.util.HashMap;
 
 /**
- * Provides methods for converting values retrieved from the database to user facing objects such as
- * Strings or resource IDs.
+ * General purpose helper class for converting and formatting values.
  */
 public class DataFormatter {
 
