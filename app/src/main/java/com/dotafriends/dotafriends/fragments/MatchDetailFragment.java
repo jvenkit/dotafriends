@@ -157,8 +157,6 @@ public class MatchDetailFragment extends Fragment {
         TextView heroHealingView = (TextView)v.findViewById(R.id.table_row_hero_healing);
         TextView towerDamageView = (TextView)v.findViewById(R.id.table_row_tower_damage);
 
-        long accountId = mPlayerMatchCursor.getLong(mPlayerMatchCursor
-                .getColumnIndexOrThrow(DatabaseContract.PlayerMatchData.ACCOUNT_ID));
         String playerName = mPlayerMatchCursor.getString(mPlayerMatchCursor
                 .getColumnIndexOrThrow(DatabaseContract.Players.DISPLAY_NAME));
         int level = mPlayerMatchCursor.getInt(mPlayerMatchCursor
