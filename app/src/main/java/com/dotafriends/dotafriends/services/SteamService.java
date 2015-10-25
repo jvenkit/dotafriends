@@ -125,14 +125,14 @@ public class SteamService {
                 .compose(this.<SingleMatchInfo>filterWebErrors());
     }
 
-    private Observable<MatchHistory> fetchRemainingMatchHistory(MatchHistory requestData, long accountId) {
+    private Observable<MatchHistory> fetchMatchHistoryRecursive(MatchHistory requestData, long accountId) {
         if (requestData.getResultsRemaining() > 0) {
             return Observable.concat(Observable.just(requestData),
                     mWebService.fetchMatchHistory(API_KEY, accountId,
                             requestData.getMatches().get(requestData.getNumResults() - 1).getMatchId(), 100)
                             .compose(this.<MatchHistory>filterWebErrors())
                             .delay(2000, TimeUnit.MILLISECONDS)
-                            .flatMap(result -> fetchRemainingMatchHistory(result, accountId))
+                            .flatMap(result -> fetchMatchHistoryRecursive(result, accountId))
             );
         } else {
             return Observable.just(requestData);
@@ -145,7 +145,7 @@ public class SteamService {
         return mWebService.fetchMatchHistory(API_KEY, accountId, 0, 100)
                 .retry(3)
                 .compose(this.<MatchHistory>filterWebErrors())
-                .flatMap(result -> fetchRemainingMatchHistory(result, accountId))
+                .flatMap(result -> fetchMatchHistoryRecursive(result, accountId))
                 .flatMap(matchHistory -> {
                     if (matchIds.size() == 0) {
                         for (MatchHistoryMatch match : matchHistory.getMatches()) {
@@ -168,7 +168,7 @@ public class SteamService {
         return mWebService.fetchMatchHistory(API_KEY, accountId, 0, 100)
                 .retry(3)
                 .compose(this.<MatchHistory>filterWebErrors())
-                .flatMap(result -> fetchRemainingMatchHistory(result, accountId))
+                .flatMap(result -> fetchMatchHistoryRecursive(result, accountId))
                 .flatMap(matchHistory -> {
                     if (players.size() == 0) {
                         for (MatchHistoryMatch match : matchHistory.getMatches()) {
