@@ -115,10 +115,12 @@ public class MatchListFragment extends ListFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_add_new_matches:
+            case R.id.action_update_matches:
                 Intent intent = new Intent(getActivity(), MatchService.class);
                 intent.putExtra(MatchService.LATEST_MATCH_EXTRA,
                         getListAdapter().getItemId(0));
+                // Only update matches
+                intent.putExtra(MatchService.FETCH_PARAMS, 1);
                 getActivity().startService(intent);
                 return true;
             case R.id.action_track_player:
@@ -145,6 +147,8 @@ public class MatchListFragment extends ListFragment
                         rebuildListQuery();
                         updateListView();
                         Intent intent = new Intent(getActivity(), MatchService.class);
+                        // Use 0 for initial fetch
+                        intent.putExtra(MatchService.FETCH_PARAMS, 0);
                         getActivity().startService(intent);
                     }
 
@@ -183,7 +187,7 @@ public class MatchListFragment extends ListFragment
 
     private void updateListView() {
         mListObservable
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(cursor -> {
                     if (mAdapter == null) {

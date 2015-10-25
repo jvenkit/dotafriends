@@ -33,6 +33,9 @@ public class MatchService extends Service {
 
     public static final String LATEST_MATCH_EXTRA = "com.dotafriends.dotafriends.latest_match";
 
+    // 0 for initial fetch, 1 for updating matches only, 2 for updating players only
+    public static final String FETCH_PARAMS = "com.dotafriends.dotafriends.fetch_params";
+
     private DatabaseHelper mDbHelper;
     private SteamService mWebService;
     private long mPlayerId;
@@ -65,7 +68,7 @@ public class MatchService extends Service {
                 PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setSmallIcon(R.drawable.hero_icon_default)
                 .setContentTitle("DotaFriends")
-                .setContentText("Getting list of matches")
+                .setContentText("Fetching data")
                 .setOngoing(true)
                 .setAutoCancel(false)
                 .setProgress(0, 0, true)
@@ -75,29 +78,56 @@ public class MatchService extends Service {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 WAKE_LOCK_TAG);
+        Log.i(TAG, "Acquiring wake lock");
         mWakeLock.acquire();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         long latestMatchId = intent.getLongExtra(LATEST_MATCH_EXTRA, 0);
-        mWebService.fetchPlayerSummaries(mPlayerId)
-                .flatMap(mDbHelper::insertPlayerSummary)
-                .last()
-                .flatMap(insertFinished -> mWebService.fetchMatchIds(mPlayerId, latestMatchId))
-                .flatMap(matchIds -> {
-                    mProgressMax = matchIds.size();
-                    return Observable.just(matchIds);
-                })
-                .compose(mWebService.fetchMatches())
-                .flatMap(mDbHelper::insertMatch)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<SingleMatchInfo>() {
+        int fetchParams = intent.getIntExtra(FETCH_PARAMS, 0);
+        Observable<Void> serviceObservable;
+        switch (fetchParams) {
+            case 1:
+                serviceObservable = mWebService.fetchMatchIds(mPlayerId, latestMatchId)
+                        .flatMap(matchIds -> {
+                            mProgressMax = matchIds.size();
+                            return Observable.just(matchIds);
+                        })
+                        .compose(mWebService.fetchMatches())
+                        .map(mDbHelper::insertMatch)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
+                break;
+            case 2:
+                mProgressMax = 0;
+                serviceObservable = mWebService.fetchPlayerSummaries(mPlayerId)
+                        .map(mDbHelper::insertPlayerSummary)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
+                break;
+            default:
+                serviceObservable = mWebService.fetchPlayerSummaries(mPlayerId)
+                        .map(mDbHelper::insertPlayerSummary)
+                        .last()
+                        .flatMap(insertFinished -> mWebService.fetchMatchIds(mPlayerId, latestMatchId))
+                        .flatMap(matchIds -> {
+                            mProgressMax = matchIds.size();
+                            return Observable.just(matchIds);
+                        })
+                        .compose(mWebService.fetchMatches())
+                        .map(mDbHelper::insertMatch)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
+                break;
+        }
+
+        serviceObservable
+                .subscribe(new Subscriber<Void>() {
                     @Override
                     public void onCompleted() {
-                        Log.d(TAG, "Finished");
-                        mBuilder.setContentText("Finished adding matches")
+                        Log.d(TAG, "Match service finished successfully");
+                        mBuilder.setContentText("Data updated")
                                 .setProgress(0, 0, false)
                                 .setOngoing(false)
                                 .setAutoCancel(true);
@@ -113,7 +143,7 @@ public class MatchService extends Service {
                                     .setOngoing(false)
                                     .setAutoCancel(true);
                         } else {
-                            mBuilder.setContentText("Error adding matches")
+                            mBuilder.setContentText("Something went wrong, try again")
                                     .setProgress(0, 0, false)
                                     .setOngoing(false)
                                     .setAutoCancel(true);
@@ -124,12 +154,14 @@ public class MatchService extends Service {
                     }
 
                     @Override
-                    public void onNext(SingleMatchInfo match) {
-                        mProgress += 1;
-                        mBuilder.setContentText("Adding match : " + match.getMatchId())
-                                .setProgress(mProgressMax, mProgress, false);
-                        mNotifyManager.notify(0, mBuilder.build());
-                        broadcastListUpdate();
+                    public void onNext(Void v) {
+                        if (mProgressMax != 0) {
+                            mProgress += 1;
+                            mBuilder.setContentText("Adding matches")
+                                    .setProgress(mProgressMax, mProgress, false);
+                            mNotifyManager.notify(0, mBuilder.build());
+                            broadcastListUpdate();
+                        }
                     }
                 });
 
@@ -138,6 +170,7 @@ public class MatchService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.i(TAG, "Releasing wake lock");
         mWakeLock.release();
         mDbHelper.close();
         super.onDestroy();
