@@ -173,8 +173,7 @@ public class SteamService {
                     if (players.size() == 0) {
                         for (MatchHistoryMatch match : matchHistory.getMatches()) {
                             for (Player player : match.getPlayers()) {
-                                if (!players.contains(player.getAccountId()) &&
-                                        player.getAccountId() != accountId)
+                                if (!players.contains(player.getAccountId()))
                                     players.add(player.getAccountId());
                             }
                         }
@@ -182,8 +181,7 @@ public class SteamService {
                     } else {
                         for (int i = 1; i < matchHistory.getMatches().size(); i++) {
                             for (Player player : matchHistory.getMatches().get(i).getPlayers()) {
-                                if (!players.contains(player.getAccountId()) &&
-                                        player.getAccountId() != accountId)
+                                if (!players.contains(player.getAccountId()))
                                     players.add(player.getAccountId());
                             }
                         }
