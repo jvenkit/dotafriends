@@ -3,13 +3,13 @@ package com.dotafriends.dotafriends.services;
 import android.util.Log;
 
 import com.dotafriends.dotafriends.helpers.DataFormatter;
+import com.dotafriends.dotafriends.models.DotaApiResult;
 import com.dotafriends.dotafriends.models.MatchHistory;
 import com.dotafriends.dotafriends.models.MatchHistoryMatch;
 import com.dotafriends.dotafriends.models.Player;
 import com.dotafriends.dotafriends.models.PlayerSummaries;
 import com.dotafriends.dotafriends.models.PlayerSummary;
 import com.dotafriends.dotafriends.models.SingleMatchInfo;
-import com.dotafriends.dotafriends.models.DotaApiResult;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,7 +24,6 @@ import retrofit.RxJavaCallAdapterFactory;
 import retrofit.http.GET;
 import retrofit.http.Query;
 import rx.Observable;
-import rx.functions.Func0;
 
 /**
  * Class responsible for making API requests using Retrofit. Methods return Observables that emit
@@ -74,19 +73,8 @@ public class SteamService {
         );
     }
 
-    private class DotaEnvelope<T extends DotaApiResult> {
-        private T result;
-    }
-
-    private class SteamEnvelope<T> {
-        private T response;
-    }
-
-    public class SteamServiceException extends Exception {
-        SteamServiceException(String detailMessage) { super(detailMessage); }
-    }
-
     public Observable<List<Long>> fetchMatchIds(long accountId, long latestMatchId) {
+        Log.d(TAG, "Fetching match");
         return fetchAllMatchIds(accountId)
                 .flatMap(matchIds -> {
                     int index = matchIds.indexOf(latestMatchId);
@@ -97,6 +85,7 @@ public class SteamService {
     }
 
     public Observable.Transformer<List<Long>, SingleMatchInfo> fetchMatches() {
+        Log.d(TAG, "Fetching matches");
         return matchIdsObservable ->
             matchIdsObservable
                     .flatMap(matchIds -> Observable.interval(2000, 2000, TimeUnit.MILLISECONDS)
@@ -109,7 +98,6 @@ public class SteamService {
 
     public Observable<PlayerSummary> fetchPlayerSummaries(long accountId) {
         return fetchAccountIds(accountId)
-                .compose(this.<List<Long>>splitAccountIds())
                 .flatMap(accountIds -> {
                     StringBuilder sb = new StringBuilder();
                     if (!accountIds.isEmpty()) {
@@ -137,12 +125,6 @@ public class SteamService {
                 .compose(this.<SingleMatchInfo>filterWebErrors());
     }
 
-    private Observable<MatchHistory> fetchMatchHistory(long accountId) {
-        return mWebService.fetchMatchHistory(API_KEY, accountId, 0, 100)
-                .retry(3)
-                .compose(this.<MatchHistory>filterWebErrors());
-    }
-
     private Observable<MatchHistory> fetchRemainingMatchHistory(MatchHistory requestData, long accountId) {
         if (requestData.getResultsRemaining() > 0) {
             return Observable.concat(Observable.just(requestData),
@@ -160,7 +142,9 @@ public class SteamService {
     private Observable<List<Long>> fetchAllMatchIds(long accountId) {
         List<Long> matchIds = new ArrayList<>();
 
-        return fetchMatchHistory(accountId)
+        return mWebService.fetchMatchHistory(API_KEY, accountId, 0, 100)
+                .retry(3)
+                .compose(this.<MatchHistory>filterWebErrors())
                 .flatMap(result -> fetchRemainingMatchHistory(result, accountId))
                 .flatMap(matchHistory -> {
                     if (matchIds.size() == 0) {
@@ -181,7 +165,9 @@ public class SteamService {
     private Observable<List<Long>> fetchAccountIds(long accountId) {
         List<Long> players = new ArrayList<>();
 
-        return fetchMatchHistory(accountId)
+        return mWebService.fetchMatchHistory(API_KEY, accountId, 0, 100)
+                .retry(3)
+                .compose(this.<MatchHistory>filterWebErrors())
                 .flatMap(result -> fetchRemainingMatchHistory(result, accountId))
                 .flatMap(matchHistory -> {
                     if (players.size() == 0) {
@@ -204,12 +190,9 @@ public class SteamService {
                         return Observable.just(players);
                     }
                 })
-                .last();
-    }
-
-    private Observable.Transformer<List<Long>, List<Long>> splitAccountIds() {
-        return listObservable ->
-                listObservable.flatMap(accountIds -> {
+                .last()
+                // Split account IDs into lots of 100, use interval to limit API calls
+                .flatMap(accountIds -> {
                     Log.d(TAG, "Found " + accountIds.size() + " IDs");
                     if (accountIds.size() <= 100) {
                         return Observable.just(accountIds);
@@ -220,16 +203,24 @@ public class SteamService {
                                 .flatMap(tick -> {
                                     if (tick != split) {
                                         return Observable.just(accountIds.subList(
-                                                tick.intValue() * 100, tick.intValue() * 100 + 100)
+                                                        tick.intValue() * 100, tick.intValue() * 100 + 100)
                                         );
                                     } else {
                                         return Observable.just(accountIds.subList(
-                                                tick.intValue() * 100, accountIds.size())
+                                                        tick.intValue() * 100, accountIds.size())
                                         );
                                     }
                                 });
                     }
                 });
+    }
+
+    private class DotaEnvelope<T extends DotaApiResult> {
+        private T result;
+    }
+
+    private class SteamEnvelope<T> {
+        private T response;
     }
 
     private <T extends DotaApiResult> Observable.Transformer<DotaEnvelope<T>, T> filterWebErrors() {
@@ -246,5 +237,9 @@ public class SteamService {
                                 return Observable.just(requestData.result);
                             }
                         });
+    }
+
+    public class SteamServiceException extends Exception {
+        SteamServiceException(String detailMessage) { super(detailMessage); }
     }
 }
