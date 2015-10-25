@@ -17,8 +17,8 @@ import com.dotafriends.dotafriends.models.SingleMatchInfo;
 import rx.Observable;
 
 /**
- * Database helper singleton responsible for creation and opening of the database. Also provides
- * methods for common CRUD operations.
+ * Database helper singleton responsible for creation and opening of the database. Provides
+ * methods for inserting data retrieved from API into database.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
