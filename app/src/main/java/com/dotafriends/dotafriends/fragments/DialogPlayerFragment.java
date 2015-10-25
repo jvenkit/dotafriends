@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
 
 import com.dotafriends.dotafriends.R;
@@ -36,12 +38,13 @@ public class DialogPlayerFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final EditText editText = new EditText(getActivity());
-        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View v = inflater.inflate(R.layout.dialog_player_id, null);
+        EditText editText = (EditText)v.findViewById(R.id.dialog_player_id_edit);
 
-        builder.setTitle(R.string.dialog_player_id_title)
+        builder.setView(v)
+                .setTitle(R.string.dialog_player_id_title)
                 .setMessage(R.string.dialog_player_id_hint)
-                .setView(editText)
                 .setPositiveButton(R.string.dialog_player_id_positive_button,
                         ((dialog, which) -> mListener.onDialogAddPlayer(this,
                                 Long.valueOf(editText.getText().toString()))))
