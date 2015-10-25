@@ -9,7 +9,7 @@
         android:textSize="16sp"
         android:maxLines="1"
         android:ellipsize="end"
-        android:layout_gravity="center_horizontal"/>
+        android:gravity="center_horizontal"/>
     <TextView
         android:id="@+id/table_row_level"
         android:padding="5dp"
