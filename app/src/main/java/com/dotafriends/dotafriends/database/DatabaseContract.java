@@ -3,7 +3,7 @@ package com.dotafriends.dotafriends.database;
 import android.provider.BaseColumns;
 
 /**
- * Class that defines the column and table names of the database. Each inner class represents a
+ * Defines the column and table names of the database. Each inner class represents a
  * table.
  */
 public class DatabaseContract {
