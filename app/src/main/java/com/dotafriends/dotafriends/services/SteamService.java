@@ -13,7 +13,9 @@ import com.dotafriends.dotafriends.models.SingleMatchInfo;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.okhttp.OkHttpClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +43,11 @@ public class SteamService {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
+
+        OkHttpClient client = new OkHttpClient();
+
+        client.setReadTimeout(30, TimeUnit.SECONDS);
+        client.setConnectTimeout(30, TimeUnit.SECONDS);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(WEB_SERVICE_BASE_URL)
